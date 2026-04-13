@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>EV Charging Stations</title>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+<style>
+body{
+background:#f8f9fa;
+}
+
+header{
+background-color:green;
+padding:15px;
+display:flex;
+justify-content:space-between;
+align-items:center;
+color:aliceblue
+}
+
+nav a{
+margin-left:20px;
+text-decoration:none;
+color:black;
+font-weight:bold;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+<h3 class="fst-italic fw-bold">Innvoltix</h3>
+
+<nav>
+<a href="{{ url_for('home') }}">Home</a>
+<a href="{{ url_for('stations') }}">Stations</a>
+<a href="{{ url_for('about') }}">About</a>
+</nav>
+</header>
+
+
+<!-- SEARCH + RANGE -->
+<div class="container mt-4">
+<div class="row justify-content-center g-2">
+
+<!-- City search -->
+<div class="col-md-4 col-6">
+<form action="/search" method="POST">
+<input type="text" name="city"
+class="form-control"
+placeholder="Search by city">
+</div>
+
+<div class="col-md-2 col-6">
+<button class="btn btn-primary w-100">
+Search
+</button>
+</form>
+</div>
+
+<!-- Range dropdown -->
+<div class="col-md-3 col-6">
+<select id="rangeSelect" class="form-control">
+<option value="">Select Range</option>
+<option value="5">Within 5 KM</option>
+<option value="10">Within 10 KM</option>
+<option value="50">Within 50 KM</option>
+</select>
+</div>
+
+<div class="col-md-2 col-6">
+<button onclick="useLocation()" class="btn btn-success w-100">
+Range Search 📍
+</button>
+</div>
+
+</div>
+</div>
+
+
+<!-- STATION CARDS -->
+<div class="container mt-4">
+<div class="row g-4" id="stationsContainer">
+
+{% for station in stations %}
+<div class="col-md-4 station-card col-6"
+data-lat="{{ station['lattitude'] }}"
+data-lng="{{ station['longitude'] }}">
+
+<div class="card p-3 shadow h-100">
+
+<h5>{{ station['name'] }}</h5>
+
+<p>{{ station['city'] }}</p>
+
+<p>{{ station['address'] }}</p>
+
+<p>Type: {{ station['type'] }}</p>
+
+<p class="distance text-success fw-bold"></p>
+
+<a href="https://www.google.com/maps?q={{ station['lattitude'] }},{{ station['longitude'] }}"
+target="_blank"
+class="btn btn-success">
+Get Route
+</a>
+
+</div>
+</div>
+{% endfor %}
+
+</div>
+</div>
+
+
+<script>
+
+let userLat = null;
+let userLng = null;
+
+function useLocation(){
+navigator.geolocation.getCurrentPosition(function(position){
+
+userLat = position.coords.latitude;
+userLng = position.coords.longitude;
+
+calculateDistances();
+
+});
+}
+
+function getDistance(lat1, lon1, lat2, lon2) {
+
+let R = 6371;
+
+let dLat = (lat2-lat1) * Math.PI/180;
+let dLon = (lon2-lon1) * Math.PI/180;
+
+let a =
+Math.sin(dLat/2) * Math.sin(dLat/2) +
+Math.cos(lat1*Math.PI/180) *
+Math.cos(lat2*Math.PI/180) *
+Math.sin(dLon/2) * Math.sin(dLon/2);
+
+let c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+
+return R * c;
+}
+
+
+function calculateDistances() {
+
+let selectedRange = document.getElementById("rangeSelect").value;
+
+let cards = document.querySelectorAll(".station-card");
+
+cards.forEach(card => {
+
+let lat = parseFloat(card.getAttribute("data-lat"));
+let lng = parseFloat(card.getAttribute("data-lng"));
+
+let distance = getDistance(userLat, userLng, lat, lng);
+
+let distanceText = card.querySelector(".distance");
+
+if(selectedRange === "" || distance <= selectedRange){
+card.style.display = "block";
+distanceText.innerText = "Distance: " + distance.toFixed(2) + " km";
+}
+else{
+card.style.display = "none";
+}
+
+});
+
+}
+
+</script>
+
+
+</body>
+</html>
