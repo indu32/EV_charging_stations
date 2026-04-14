@@ -15,11 +15,16 @@ background-image: url("/static/bg2.jpeg");
 width:100%;
 background-position: center;
 background-repeat: no-repeat;
-background-size:contain;
+background-size:cover;
 padding: 40px;
 border-radius: 0px;
 width:100%;
-max-width: 1200px;
+
+}
+@media(max-width:576px){
+  .card-bg{
+    background-size: contain;
+  }
 }
 
 .blur{
@@ -39,6 +44,12 @@ border-radius: 0px;
     .card-container{
         flex-direction: column;
     }
+}
+@media(max-width:576px){
+  .card img{
+    height:80px;
+    object-fit:contain;
+  }
 }
 
 .card{
