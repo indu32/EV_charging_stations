@@ -22,30 +22,26 @@ border-radius: 0px;
 
 }
 
-@media(max-width:576px){
-
-  .scroll-row{
-    display:flex;
-    overflow-x:auto;
-    flex-wrap:nowrap;
-    gap:15px;
-    padding:10px;
-    scroll-snap-type:x mandatory;
+@media (max-width: 576px) {
+  .scroll-row {
+    display: flex;
+    overflow-x: auto;
+    flex-wrap: nowrap;        /* important */
+    gap: 15px;
+    padding: 10px;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;              /* Firefox */
   }
 
-  .scroll-row::-webkit-scrollbar{
-    display:none;
+  .scroll-row::-webkit-scrollbar {
+    display: none;                       /* Chrome, Safari */
   }
 
-  .scroll-card{
-    flex:0 0 48%; /* 2 cards visible */
-    scroll-snap-align:start;
-  }
-
+  .scroll-card {
+  flex: 0 0 48%;        /* 2 cards per row */
+  scroll-snap-align: start;
+  flex-shrink: 0;
 }
-@media(max-width:576px){
-  .scroll-row{
-    flex-wrap: nowrap !important;
   }
 }
 
@@ -334,25 +330,24 @@ contact us || indumathi3637@gmail.com
 
 
 <script>
-const scrollContainer = document.querySelector('.scroll-row');
+  const scrollContainer = document.querySelector('.scroll-row');
+  const cards = document.querySelectorAll('.scroll-card');
 
-let scrollAmount = 0;
+  if (scrollContainer && cards.length > 0) {
+    let currentIndex = 0;
 
-setInterval(() => {
-  if (scrollContainer) {
-    scrollAmount += 200; // scroll distance
+    setInterval(() => {
+      currentIndex++;
+      if (currentIndex >= cards.length) {
+        currentIndex = 0;
+      }
 
-    // end ki vellina appudu reset
-    if (scrollAmount >= scrollContainer.scrollWidth - scrollContainer.clientWidth) {
-      scrollAmount = 0;
-    }
-
-    scrollContainer.scrollTo({
-      left: scrollAmount,
-      behavior: 'smooth'
-    });
+      scrollContainer.scrollTo({
+        left: cards[currentIndex].offsetLeft,
+        behavior: 'smooth'
+      });
+    }, 2000);
   }
-}, 2000); // every 2 seconds
 </script>
 
 </body>
