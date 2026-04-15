@@ -328,6 +328,32 @@ contact us || indumathi3637@gmail.com
 </div>
 
   
-    
+ 
+
+
+
+
+<script>
+const scrollContainer = document.querySelector('.scroll-row');
+
+let scrollAmount = 0;
+
+setInterval(() => {
+  if (scrollContainer) {
+    scrollAmount += 200; // scroll distance
+
+    // end ki vellina appudu reset
+    if (scrollAmount >= scrollContainer.scrollWidth - scrollContainer.clientWidth) {
+      scrollAmount = 0;
+    }
+
+    scrollContainer.scrollTo({
+      left: scrollAmount,
+      behavior: 'smooth'
+    });
+  }
+}, 2000); // every 2 seconds
+</script>
+
 </body>
 </html>
