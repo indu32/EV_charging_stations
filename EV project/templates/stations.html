@@ -355,15 +355,20 @@ footer {
     <div class="row justify-content-center g-2 align-items-center">
 
       <div class="col-md-4 col-7">
-        <form action="/search" method="POST" style="display:contents">
-          <input type="text" name="city" class="form-control" placeholder="🔍  Search by city or area">
-        </form>
-      </div>
+        <form action="/search" method="POST" class="d-flex justify-content-center gap-2">
 
-      <div class="col-md-2 col-5">
-        <form action="/search" method="POST" style="display:contents">
-          <button type="submit" class="btn-search">Search</button>
-        </form>
+  <input 
+    type="text" 
+    name="city" 
+    class="form-control" 
+    placeholder="🔍 Search by city"
+    style="max-width:300px;"
+    required
+  >
+
+  <button type="submit" class="btn-search">Search</button>
+
+</form>
       </div>
 
       <div class="col-md-3 col-7">
@@ -395,25 +400,26 @@ footer {
 
     {% for station in stations %}
     <div class="col-6 col-md-4 col-lg-3 station-card"
-         data-lat="{{ station['lattitude'] }}"
-         data-lng="{{ station['longitude'] }}">
+     data-lat="{{ station['lattitude'] }}"
+     data-lng="{{ station['longitude'] }}">
 
-      <div class="station-card-inner">
-        <div>
-          <div class="type-pill">{{ station['type'] }}</div>
-          <div class="station-name">{{ station['name'] }}</div>
-          <p class="station-meta"><span>City:</span> {{ station['city'] }}</p>
-          <p class="station-meta"><span>Address:</span> {{ station['address'] }}</p>
-          <p class="distance-text distance"></p>
-        </div>
-        <a href="https://www.google.com/maps?q={{ station['lattitude'] }},{{ station['longitude'] }}"
-           target="_blank"
-           class="btn-route">
-          Get Route &rarr;
-        </a>
-      </div>
-
+  <div class="station-card-inner">
+    <div>
+      <div class="type-pill">{{ station['type'] }}</div>
+      <div class="station-name">{{ station['name'] }}</div>
+      <p class="station-meta"><span>City:</span> {{ station['city'] }}</p>
+      <p class="station-meta"><span>Address:</span> {{ station['address'] }}</p>
+      <p class="distance-text distance"></p>
     </div>
+
+    <a href="https://www.google.com/maps?q={{ station['latitude'] }},{{ station['longitude'] }}"
+       target="_blank"
+       class="btn-route">
+      Get Route →
+    </a>
+  </div>
+
+</div>
     {% endfor %}
 
   </div>
@@ -433,37 +439,55 @@ let userLat = null;
 let userLng = null;
 
 function useLocation() {
-  navigator.geolocation.getCurrentPosition(function(position) {
-    userLat = position.coords.latitude;
-    userLng = position.coords.longitude;
-    calculateDistances();
-  });
+  if (!navigator.geolocation) {
+    alert("Geolocation not supported");
+    return;
+  }
+
+  navigator.geolocation.getCurrentPosition(
+    function(position) {
+      userLat = position.coords.latitude;
+      userLng = position.coords.longitude;
+
+      alert("Location fetched!");   // ✅ CONFIRM IT RUNS
+
+      calculateDistances();
+    },
+    function(error) {
+      alert("ERROR: " + error.message);
+    }
+  );
 }
 
 function getDistance(lat1, lon1, lat2, lon2) {
   let R = 6371;
   let dLat = (lat2 - lat1) * Math.PI / 180;
   let dLon = (lon2 - lon1) * Math.PI / 180;
+
   let a =
-    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+    Math.sin(dLat / 2) ** 2 +
     Math.cos(lat1 * Math.PI / 180) *
     Math.cos(lat2 * Math.PI / 180) *
-    Math.sin(dLon / 2) * Math.sin(dLon / 2);
+    Math.sin(dLon / 2) ** 2;
+
   let c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
   return R * c;
 }
 
 function calculateDistances() {
-  let selectedRange = document.getElementById("rangeSelect").value;
+  let selectedRange = parseFloat(document.getElementById("rangeSelect").value);
   let cards = document.querySelectorAll(".station-card");
 
   cards.forEach(card => {
-    let lat = parseFloat(card.getAttribute("data-lat"));
-    let lng = parseFloat(card.getAttribute("data-lng"));
+    let lat = parseFloat(card.dataset.lat);
+    let lng = parseFloat(card.dataset.lng);
+
+    if (isNaN(lat) || isNaN(lng)) return;
+
     let distance = getDistance(userLat, userLng, lat, lng);
     let distanceText = card.querySelector(".distance");
 
-    if (selectedRange === "" || distance <= selectedRange) {
+    if (isNaN(selectedRange) || distance <= selectedRange) {
       card.style.display = "block";
       distanceText.innerText = "📍 " + distance.toFixed(2) + " km away";
     } else {
@@ -472,6 +496,5 @@ function calculateDistances() {
   });
 }
 </script>
-
 </body>
 </html>
