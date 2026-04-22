@@ -1,99 +1,385 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>About - EV Charging Finder</title>
+<title>About — Innvoltix</title>
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
 <style>
+*, *::before, *::after { box-sizing: border-box; }
+
 body {
-background: #f5f7fa;
-color: #333;
+  background-color: #f2f5f2;
+  font-family: 'Poppins', sans-serif;
+  margin: 0;
+  color: #1c2e1e;
 }
 
-
-
-
-.container {
-margin-top: 50px;
-margin-bottom: 50px;
-width: 200%;
+/* ── ANNOUNCEMENT BAR ── */
+.announcement-bar {
+  background-color: #1a6b2f;
+  color: rgba(255,255,255,0.92);
+  text-align: center;
+  font-size: 0.78rem;
+  font-weight: 500;
+  letter-spacing: 0.4px;
+  padding: 7px 16px;
 }
 
-body
-{
-    background-color: antiquewhite;
+/* ── HEADER ── */
+header {
+  background: #fff;
+  border-bottom: 1px solid #d8e8da;
+  padding: 0 36px;
+  height: 62px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: sticky;
+  top: 0;
+  z-index: 200;
 }
 
-header{
-background-color:green;
-padding:15px;
-display:flex;
-justify-content:space-between;
-align-items:center;
-color:aliceblue;
+.logo-wrap {
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
 
-nav a{
-margin-left:20px;
-text-decoration:none;
-color:black;
-font-weight:bold;
+.logo-icon {
+  width: 34px;
+  height: 34px;
+  background: #1a6b2f;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+}
+
+.logo-text {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #1a6b2f;
+  letter-spacing: 0.5px;
+  margin: 0;
+}
+
+nav a {
+  margin-left: 28px;
+  text-decoration: none;
+  color: #3a4a3c;
+  font-weight: 500;
+  font-size: 0.9rem;
+  padding-bottom: 2px;
+  border-bottom: 2px solid transparent;
+  transition: color 0.2s, border-color 0.2s;
+}
+
+nav a:hover {
+  color: #1a6b2f;
+  border-bottom-color: #1a6b2f;
+}
+
+nav a.active {
+  color: #1a6b2f;
+  border-bottom-color: #1a6b2f;
+}
+
+/* ── PAGE HERO STRIP ── */
+.page-hero {
+  background: linear-gradient(120deg, #1a6b2f 0%, #2e9e50 100%);
+  padding: 44px 48px 40px;
+}
+
+.page-hero .section-label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.65);
+  margin-bottom: 6px;
+}
+
+.page-hero h1 {
+  font-size: 1.9rem;
+  font-weight: 700;
+  color: #fff;
+  margin: 0;
+}
+
+/* ── MAIN CONTENT ── */
+.main-wrap {
+  padding: 52px 0 64px;
+}
+
+/* ── ABOUT CARD ── */
+.about-img-card {
+  background: #fff;
+  border: 1px solid #dceade;
+  border-radius: 14px;
+  overflow: hidden;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+.about-img-card img {
+  width: 100%;
+  border-radius: 10px;
+  object-fit: cover;
+}
+
+.about-info-card {
+  background: #fff;
+  border: 1px solid #dceade;
+  border-top: 3px solid #2e9e50;
+  border-radius: 14px;
+  padding: 36px 32px;
+  height: 100%;
+}
+
+.section-label-sm {
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: #2e9e50;
+  margin-bottom: 6px;
+}
+
+.about-info-card h2 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #142b18;
+  margin-bottom: 20px;
+}
+
+.about-info-card p {
+  font-size: 0.9rem;
+  font-weight: 400;
+  color: #3a4a3c;
+  line-height: 1.75;
+  margin-bottom: 14px;
+}
+
+/* ── TECH PILLS ── */
+.tech-wrap {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 18px 0 28px;
+}
+
+.tech-pill {
+  display: inline-block;
+  background: #e8f5eb;
+  color: #1a6b2f;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.4px;
+  padding: 5px 13px;
+  border-radius: 20px;
+  border: 1px solid #c0dfc8;
+}
+
+/* ── BACK BUTTON ── */
+.btn-back {
+  display: inline-block;
+  background: #1a6b2f;
+  color: #fff;
+  font-size: 0.88rem;
+  font-weight: 600;
+  font-family: 'Poppins', sans-serif;
+  padding: 11px 26px;
+  border-radius: 8px;
+  text-decoration: none;
+  border: none;
+  transition: background 0.2s, transform 0.15s;
+  cursor: pointer;
+}
+
+.btn-back:hover {
+  background: #145826;
+  transform: translateY(-2px);
+  color: #fff;
+}
+
+/* ── STAT BOXES ── */
+.stat-row {
+  display: flex;
+  gap: 16px;
+  margin: 24px 0;
+  flex-wrap: wrap;
+}
+
+.stat-box {
+  flex: 1;
+  min-width: 100px;
+  background: #f2f5f2;
+  border: 1px solid #d8e8da;
+  border-radius: 10px;
+  padding: 14px 12px;
+  text-align: center;
+}
+
+.stat-box .stat-num {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: #1a6b2f;
+  line-height: 1;
+}
+
+.stat-box .stat-lbl {
+  font-size: 0.7rem;
+  font-weight: 500;
+  color: #5a7a5e;
+  margin-top: 4px;
+}
+
+/* ── FOOTER ── */
+footer {
+  background: #112918;
+  padding: 24px 36px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.footer-brand {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #a8d9b2;
+  letter-spacing: 0.5px;
+}
+
+.footer-info {
+  font-size: 0.78rem;
+  color: rgba(255,255,255,0.5);
+  text-align: right;
+}
+
+.footer-info a {
+  color: #7fcb90;
+  text-decoration: none;
+}
+
+.footer-info a:hover { text-decoration: underline; }
+
+/* ── RESPONSIVE ── */
+@media (max-width: 576px) {
+  header { padding: 0 16px; }
+  .page-hero { padding: 32px 20px 28px; }
+  .page-hero h1 { font-size: 1.4rem; }
+  .about-info-card { padding: 24px 18px; }
+  footer { flex-direction: column; text-align: center; }
+  .footer-info { text-align: center; }
 }
 </style>
 </head>
-
 <body>
 
-<header>
-<h3 class="fst-italic fw-bold">Innvoltix</h3>
+<!-- ANNOUNCEMENT BAR -->
+<div class="announcement-bar">
+  🌱 &nbsp; India's clean mobility starts here — explore verified EV charging points near you
+</div>
 
-<nav>
-<a href="{{ url_for('home') }}">Home</a>
-<a href="{{ url_for('stations') }}">Stations</a>
-<a href="{{ url_for('about') }}">About</a>
-</nav>
+<!-- HEADER -->
+<header>
+  <div class="logo-wrap">
+    <div class="logo-icon">⚡</div>
+    <span class="logo-text">Innvoltix</span>
+  </div>
+  <nav>
+    <a href="{{ url_for('home') }}">Home</a>
+    <a href="{{ url_for('stations') }}">Stations</a>
+    <a href="{{ url_for('about') }}" class="active">About</a>
+  </nav>
 </header>
 
-
-<div class="container">
-<div class="row g-4 align-items-center">
-
-<div class="col-12  col-md-6">
-<div class="card p-3 h-100">
-
-<img src="{{ url_for('static', filename='img.png') }}"
-class="img-fluid rounded">
-
-</div>
+<!-- PAGE HERO STRIP -->
+<div class="page-hero">
+  <p class="section-label">Who We Are</p>
+  <h1>About Innvoltix</h1>
 </div>
 
-<div class=" col-12 col-md-6 ">
-<div class="card p-4 h-100 " id="btn">
+<!-- MAIN CONTENT -->
+<div class="main-wrap">
+  <div class="container">
+    <div class="row g-4 align-items-stretch">
 
-<h2 class="fst-italic fw-bold">About EV Charging Finder</h2>
+      <!-- IMAGE -->
+      <div class="col-12 col-md-5">
+        <div class="about-img-card">
+          <img src="{{ url_for('static', filename='img.png') }}" alt="EV Charging Illustration">
+        </div>
+      </div>
 
-<p>
-This platform helps electric vehicle users locate nearby charging stations using
-real-time location data. Users can search by city or area, access their current location,
-and get the distance to each station. The platform also integrates Google Maps for navigation.
-</p>
+      <!-- INFO -->
+      <div class="col-12 col-md-7">
+        <div class="about-info-card">
 
-<p>
-Built with Flask, SQLite database, Bootstrap for UI, and JavaScript for location & distance calculations.
-</p>
+          <p class="section-label-sm">Our Mission</p>
+          <h2>About EV Charging Finder</h2>
 
-<br>
-<br>
-<a href="{{ url_for('home') }}" class="btn btn-primary mt-3">
-Back to Home
-</a>
+          <p>
+            This platform helps electric vehicle users locate nearby charging stations using
+            real-time location data. Users can search by city or area, access their current location,
+            and get the distance to each station.
+          </p>
 
-<br><br>
+          <p>
+            The platform integrates Google Maps for seamless navigation, making it easy to get
+            directions straight to your nearest charger.
+          </p>
+
+          <!-- STAT BOXES -->
+          <div class="stat-row">
+            <div class="stat-box">
+              <div class="stat-num">100+</div>
+              <div class="stat-lbl">Stations Listed</div>
+            </div>
+            <div class="stat-box">
+              <div class="stat-num">3</div>
+              <div class="stat-lbl">Range Filters</div>
+            </div>
+            <div class="stat-box">
+              <div class="stat-num">Live</div>
+              <div class="stat-lbl">Location Access</div>
+            </div>
+          </div>
+
+          <!-- TECH STACK -->
+          <p class="section-label-sm" style="margin-bottom:10px;">Built With</p>
+          <div class="tech-wrap">
+            <span class="tech-pill">Flask</span>
+            <span class="tech-pill">SQLite</span>
+            <span class="tech-pill">Bootstrap 5</span>
+            <span class="tech-pill">JavaScript</span>
+            <span class="tech-pill">Google Maps</span>
+          </div>
+
+          <a href="{{ url_for('home') }}" class="btn-back">&larr; Back to Home</a>
+
+        </div>
+      </div>
+
+    </div>
+  </div>
 </div>
-</div>
 
-</div>
-</div>
+<!-- FOOTER -->
+<footer>
+  <span class="footer-brand">⚡ Innvoltix</span>
+  <div class="footer-info">
+    EV Station Locator &nbsp;|&nbsp; Made by 3D &nbsp;&nbsp;
+    <a href="mailto:indumathi3637@gmail.com">indumathi3637@gmail.com</a>
+  </div>
+</footer>
 
 </body>
 </html>
