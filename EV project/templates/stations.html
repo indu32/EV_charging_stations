@@ -7,165 +7,42 @@
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <style>
 *, *::before, *::after { box-sizing: border-box; }
-
-body {
-  background-color: #f2f5f2;
-  font-family: 'Poppins', sans-serif;
-  margin: 0;
-  color: #1c2e1e;
-}
-
-.announcement-bar {
-  background-color: #1a6b2f;
-  color: rgba(255,255,255,0.92);
-  text-align: center;
-  font-size: 0.78rem;
-  font-weight: 500;
-  letter-spacing: 0.4px;
-  padding: 7px 16px;
-}
-
-header {
-  background: #fff;
-  border-bottom: 1px solid #d8e8da;
-  padding: 0 36px;
-  height: 62px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  position: sticky;
-  top: 0;
-  z-index: 200;
-}
-
+body { background-color: #f2f5f2; font-family: 'Poppins', sans-serif; margin: 0; color: #1c2e1e; }
+.announcement-bar { background-color: #1a6b2f; color: rgba(255,255,255,0.92); text-align: center; font-size: 0.78rem; font-weight: 500; letter-spacing: 0.4px; padding: 7px 16px; }
+header { background: #fff; border-bottom: 1px solid #d8e8da; padding: 0 36px; height: 62px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 200; }
 .logo-wrap { display: flex; align-items: center; gap: 10px; }
-
-.logo-icon {
-  width: 34px; height: 34px;
-  background: #1a6b2f;
-  border-radius: 8px;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 16px;
-}
-
-.logo-text {
-  font-size: 1.2rem; font-weight: 700;
-  color: #1a6b2f; letter-spacing: 0.5px; margin: 0;
-}
-
-nav a {
-  margin-left: 28px; text-decoration: none;
-  color: #3a4a3c; font-weight: 500; font-size: 0.9rem;
-  padding-bottom: 2px; border-bottom: 2px solid transparent;
-  transition: color 0.2s, border-color 0.2s;
-}
+.logo-icon { width: 34px; height: 34px; background: #1a6b2f; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 16px; }
+.logo-text { font-size: 1.2rem; font-weight: 700; color: #1a6b2f; letter-spacing: 0.5px; margin: 0; }
+nav a { margin-left: 28px; text-decoration: none; color: #3a4a3c; font-weight: 500; font-size: 0.9rem; padding-bottom: 2px; border-bottom: 2px solid transparent; transition: color 0.2s, border-color 0.2s; }
 nav a:hover, nav a.active { color: #1a6b2f; border-bottom-color: #1a6b2f; }
-
-.page-hero {
-  background: linear-gradient(120deg, #1a6b2f 0%, #2e9e50 100%);
-  padding: 44px 48px 40px;
-}
-.page-hero .section-label {
-  font-size: 0.72rem; font-weight: 700; letter-spacing: 2px;
-  text-transform: uppercase; color: rgba(255,255,255,0.65); margin-bottom: 6px;
-}
+.page-hero { background: linear-gradient(120deg, #1a6b2f 0%, #2e9e50 100%); padding: 44px 48px 40px; }
+.page-hero .section-label { font-size: 0.72rem; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: rgba(255,255,255,0.65); margin-bottom: 6px; }
 .page-hero h1 { font-size: 1.9rem; font-weight: 700; color: #fff; margin: 0; }
-
-.search-panel {
-  background: #fff;
-  border-bottom: 1px solid #d8e8da;
-  padding: 18px 0;
-}
-.search-panel input.form-control,
-.search-panel select.form-control {
-  border: 1px solid #c8deca; border-radius: 8px;
-  font-family: 'Poppins', sans-serif; font-size: 0.88rem;
-  color: #1c2e1e; padding: 10px 14px; background: #f7faf7;
-  transition: border-color 0.2s, box-shadow 0.2s;
-}
-.search-panel input.form-control:focus,
-.search-panel select.form-control:focus {
-  border-color: #2e9e50;
-  box-shadow: 0 0 0 3px rgba(46,158,80,0.12);
-  outline: none; background: #fff;
-}
-
-.btn-search {
-  background: #1a6b2f; color: #fff; border: none;
-  border-radius: 8px; font-family: 'Poppins', sans-serif;
-  font-size: 0.88rem; font-weight: 600; padding: 10px 20px;
-  width: 100%; transition: background 0.2s, transform 0.15s; cursor: pointer;
-}
+.search-panel { background: #fff; border-bottom: 1px solid #d8e8da; padding: 18px 0; }
+.search-panel input.form-control, .search-panel select.form-control { border: 1px solid #c8deca; border-radius: 8px; font-family: 'Poppins', sans-serif; font-size: 0.88rem; color: #1c2e1e; padding: 10px 14px; background: #f7faf7; transition: border-color 0.2s, box-shadow 0.2s; }
+.search-panel input.form-control:focus, .search-panel select.form-control:focus { border-color: #2e9e50; box-shadow: 0 0 0 3px rgba(46,158,80,0.12); outline: none; background: #fff; }
+.btn-search { background: #1a6b2f; color: #fff; border: none; border-radius: 8px; font-family: 'Poppins', sans-serif; font-size: 0.88rem; font-weight: 600; padding: 10px 20px; width: 100%; transition: background 0.2s, transform 0.15s; cursor: pointer; }
 .btn-search:hover { background: #145826; transform: translateY(-1px); }
-
-.btn-range {
-  background: #fff; color: #1a6b2f;
-  border: 1.5px solid #2e9e50; border-radius: 8px;
-  font-family: 'Poppins', sans-serif; font-size: 0.88rem; font-weight: 600;
-  padding: 10px 16px; width: 100%;
-  transition: background 0.2s, color 0.2s, transform 0.15s; cursor: pointer;
-}
+.btn-range { background: #fff; color: #1a6b2f; border: 1.5px solid #2e9e50; border-radius: 8px; font-family: 'Poppins', sans-serif; font-size: 0.88rem; font-weight: 600; padding: 10px 16px; width: 100%; transition: background 0.2s, color 0.2s, transform 0.15s; cursor: pointer; }
 .btn-range:hover { background: #e8f5eb; transform: translateY(-1px); }
-
 .stations-heading { padding: 32px 0 8px; }
-
-.section-label-sm {
-  font-size: 0.7rem; font-weight: 700; letter-spacing: 2px;
-  text-transform: uppercase; color: #2e9e50; margin-bottom: 4px;
-}
+.section-label-sm { font-size: 0.7rem; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: #2e9e50; margin-bottom: 4px; }
 .section-title { font-size: 1.3rem; font-weight: 700; color: #142b18; margin-bottom: 2px; }
-.section-divider {
-  width: 40px; height: 3px; background: #2e9e50;
-  border-radius: 2px; margin: 8px 0 24px;
-}
-
-.station-card-inner {
-  background: #fff; border: 1px solid #dceade;
-  border-top: 3px solid #2e9e50; border-radius: 12px;
-  padding: 18px 16px 16px; height: 100%;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-  display: flex; flex-direction: column; justify-content: space-between;
-}
-.station-card-inner:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 8px 24px rgba(20,100,40,0.11);
-}
-
+.section-divider { width: 40px; height: 3px; background: #2e9e50; border-radius: 2px; margin: 8px 0 24px; }
+.station-card-inner { background: #fff; border: 1px solid #dceade; border-top: 3px solid #2e9e50; border-radius: 12px; padding: 18px 16px 16px; height: 100%; transition: transform 0.2s ease, box-shadow 0.2s ease; display: flex; flex-direction: column; justify-content: space-between; }
+.station-card-inner:hover { transform: translateY(-4px); box-shadow: 0 8px 24px rgba(20,100,40,0.11); }
 .station-name { font-size: 0.95rem; font-weight: 700; color: #142b18; margin-bottom: 8px; }
 .station-meta { font-size: 0.78rem; color: #5a7a5e; margin-bottom: 4px; line-height: 1.5; }
 .station-meta span { font-weight: 600; color: #3a4a3c; }
-
-.type-pill {
-  display: inline-block; background: #e8f5eb; color: #1a6b2f;
-  font-size: 0.68rem; font-weight: 700; letter-spacing: 0.3px;
-  padding: 3px 10px; border-radius: 20px;
-  border: 1px solid #c0dfc8; margin-bottom: 10px;
-}
-
-.distance-text {
-  font-size: 0.78rem; font-weight: 600;
-  color: #1a6b2f; min-height: 18px; margin-bottom: 10px;
-}
-
-.btn-route {
-  display: block; background: #1a6b2f; color: #fff;
-  text-align: center; font-size: 0.82rem; font-weight: 600;
-  font-family: 'Poppins', sans-serif; padding: 9px 12px;
-  border-radius: 7px; text-decoration: none;
-  transition: background 0.2s; margin-top: auto;
-}
+.type-pill { display: inline-block; background: #e8f5eb; color: #1a6b2f; font-size: 0.68rem; font-weight: 700; letter-spacing: 0.3px; padding: 3px 10px; border-radius: 20px; border: 1px solid #c0dfc8; margin-bottom: 10px; }
+.distance-text { font-size: 0.78rem; font-weight: 600; color: #1a6b2f; min-height: 18px; margin-bottom: 10px; }
+.btn-route { display: block; background: #1a6b2f; color: #fff; text-align: center; font-size: 0.82rem; font-weight: 600; font-family: 'Poppins', sans-serif; padding: 9px 12px; border-radius: 7px; text-decoration: none; transition: background 0.2s; margin-top: auto; }
 .btn-route:hover { background: #145826; color: #fff; }
-
-footer {
-  background: #112918; padding: 24px 36px;
-  display: flex; justify-content: space-between;
-  align-items: center; flex-wrap: wrap; gap: 10px; margin-top: 56px;
-}
+footer { background: #112918; padding: 24px 36px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-top: 56px; }
 .footer-brand { font-size: 1rem; font-weight: 700; color: #a8d9b2; letter-spacing: 0.5px; }
 .footer-info { font-size: 0.78rem; color: rgba(255,255,255,0.5); text-align: right; }
 .footer-info a { color: #7fcb90; text-decoration: none; }
 .footer-info a:hover { text-decoration: underline; }
-
 @media (max-width: 576px) {
   header { padding: 0 16px; }
   .page-hero { padding: 32px 20px 28px; }
@@ -201,34 +78,24 @@ footer {
 <div class="search-panel">
   <div class="container">
     <div class="row justify-content-center g-2 align-items-center">
-
-      <div class="col-12 col-md-5">
+      <div class="col-md-4 col-7">
         <form action="/search" method="POST" class="d-flex justify-content-center gap-2">
-          <input
-            type="text"
-            name="city"
-            id="cityInput"
-            class="form-control"
-            placeholder="🔍 Search by city"
-            value="{{ search_query if search_query is defined else '' }}"
-          >
+          <input type="text" name="city" class="form-control" placeholder="🔍 Search by city" style="max-width:300px;" required>
           <button type="submit" class="btn-search">Search</button>
         </form>
       </div>
-
       <div class="col-md-3 col-7">
         <select id="rangeSelect" class="form-control">
           <option value="">Select Range</option>
           <option value="5">Within 5 KM</option>
           <option value="10">Within 10 KM</option>
           <option value="50">Within 50 KM</option>
+          <option value="100">Within 100 KM</option>
         </select>
       </div>
-
       <div class="col-md-2 col-5">
-        <button onclick="useLocation()" class="btn-range">📍 Near Me</button>
+        <button type="button" onclick="useLocation()" class="btn-range">📍 Near Me</button>
       </div>
-
     </div>
   </div>
 </div>
@@ -241,11 +108,10 @@ footer {
   </div>
 
   <div class="row g-3 pb-4" id="stationsContainer">
-
     {% if db_error is defined and db_error %}
     <div class="col-12">
-      <div style="background:#fff3cd; border:1px solid #ffc107; border-radius:10px; padding:18px 20px; color:#856404; font-size:0.88rem;">
-        ⚠️ <strong>Could not load stations.</strong> Database error: {{ db_error }}
+      <div style="background:#fff3cd;border:1px solid #ffc107;border-radius:10px;padding:18px 20px;color:#856404;font-size:0.88rem;">
+        ⚠️ <strong>Could not load stations.</strong> {{ db_error }}
       </div>
     </div>
     {% elif stations %}
@@ -262,20 +128,17 @@ footer {
             <p class="distance-text distance"></p>
           </div>
           <a href="https://www.google.com/maps?q={{ station['latitude'] }},{{ station['longitude'] }}"
-             target="_blank" class="btn-route">
-            Get Route →
-          </a>
+             target="_blank" class="btn-route">Get Route →</a>
         </div>
       </div>
       {% endfor %}
     {% else %}
     <div class="col-12">
-      <p style="text-align:center; color:#5a7a5e; padding:40px 0; font-size:0.95rem;">
+      <p style="text-align:center;color:#5a7a5e;padding:40px 0;font-size:0.95rem;">
         🔍 No stations found. Try a different city name.
       </p>
     </div>
     {% endif %}
-
   </div>
 </div>
 
@@ -291,64 +154,185 @@ footer {
 let userLat = null;
 let userLng = null;
 
+// ── NEAR ME BUTTON ──
 function useLocation() {
   if (!navigator.geolocation) {
-    alert("Geolocation is not supported by your browser.");
+    alert("Geolocation not supported by your browser");
     return;
   }
+
+  alert("📍 Fetching your location... please wait");
+
   navigator.geolocation.getCurrentPosition(
     function(position) {
       userLat = position.coords.latitude;
       userLng = position.coords.longitude;
-      calculateDistances();
+
+      localStorage.setItem("lat", userLat);
+      localStorage.setItem("lng", userLng);
+
+      // Set range to 100 KM automatically
+      document.getElementById("rangeSelect").value = "100";
+
+      // If no stations on page, fetch all from server first
+      let cards = document.querySelectorAll(".station-card");
+      if (cards.length === 0) {
+        fetchAllStationsThenFilter();
+      } else {
+        calculateDistances();
+      }
     },
     function(error) {
-      alert("Could not get your location: " + error.message);
+      if (error.code === 1) {
+        alert("❌ Location access denied. Please allow location in your browser settings.");
+      } else if (error.code === 2) {
+        alert("❌ Location unavailable. Check your internet or GPS.");
+      } else {
+        alert("❌ Could not get location. Try again.");
+      }
+    },
+    {
+      enableHighAccuracy: true,
+      timeout: 10000,
+      maximumAge: 0
     }
   );
 }
 
-function getDistance(lat1, lon1, lat2, lon2) {
-  var R = 6371;
-  var dLat = (lat2 - lat1) * Math.PI / 180;
-  var dLon = (lon2 - lon1) * Math.PI / 180;
-  var a =
-    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-    Math.cos(lat1 * Math.PI / 180) *
-    Math.cos(lat2 * Math.PI / 180) *
-    Math.sin(dLon / 2) * Math.sin(dLon / 2);
-  var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-  return R * c;
+// ── FETCH ALL STATIONS FROM SERVER THEN FILTER ──
+function fetchAllStationsThenFilter() {
+  // Save location to localStorage first
+  localStorage.setItem("lat", userLat);
+  localStorage.setItem("lng", userLng);
+  localStorage.setItem("autoNearMe", "true");
+
+  // Go to stations page — it will auto-run Near Me on load
+  window.location.href = "/stations";
 }
 
+// ── RENDER STATION CARDS DYNAMICALLY ──
+function renderStationCards(stations) {
+  const container = document.getElementById("stationsContainer");
+  container.innerHTML = "";
+
+  if (stations.length === 0) {
+    container.innerHTML = `<div class="col-12"><p style="text-align:center;color:#5a7a5e;padding:40px 0;">No stations found.</p></div>`;
+    return;
+  }
+
+  stations.forEach(station => {
+    const col = document.createElement("div");
+    col.className = "col-6 col-md-4 col-lg-3 station-card";
+    col.dataset.lat = station.latitude;
+    col.dataset.lng = station.longitude;
+    col.innerHTML = `
+      <div class="station-card-inner">
+        <div>
+          <div class="type-pill">${station.type}</div>
+          <div class="station-name">${station.name}</div>
+          <p class="station-meta"><span>City:</span> ${station.city}</p>
+          <p class="station-meta"><span>Address:</span> ${station.address}</p>
+          <p class="distance-text distance"></p>
+        </div>
+        <a href="https://www.google.com/maps?q=${station.latitude},${station.longitude}"
+           target="_blank" class="btn-route">Get Route →</a>
+      </div>`;
+    container.appendChild(col);
+  });
+}
+
+// ── HAVERSINE DISTANCE FORMULA ──
+function getDistance(lat1, lon1, lat2, lon2) {
+  const R = 6371;
+  const dLat = (lat2 - lat1) * Math.PI / 180;
+  const dLon = (lon2 - lon1) * Math.PI / 180;
+  const a =
+    Math.sin(dLat / 2) ** 2 +
+    Math.cos(lat1 * Math.PI / 180) *
+    Math.cos(lat2 * Math.PI / 180) *
+    Math.sin(dLon / 2) ** 2;
+  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+}
+
+// ── FILTER CARDS BY RANGE AND SHOW DISTANCE ──
 function calculateDistances() {
-  if (userLat === null || userLng === null) return;
+  if (userLat === null || userLng === null) {
+    alert("Please click Near Me first to get your location.");
+    return;
+  }
 
-  var selectedRange = parseFloat(document.getElementById("rangeSelect").value);
-  var cards = document.querySelectorAll(".station-card");
+  const selectedRange = parseFloat(document.getElementById("rangeSelect").value) || 100;
+  const cards = document.querySelectorAll(".station-card");
+  let visibleCount = 0;
 
-  cards.forEach(function(card) {
-    var lat = parseFloat(card.dataset.lat);
-    var lng = parseFloat(card.dataset.lng);
+  cards.forEach(card => {
+    const lat = parseFloat(card.dataset.lat);
+    const lng = parseFloat(card.dataset.lng);
     if (isNaN(lat) || isNaN(lng)) return;
 
-    var distance = getDistance(userLat, userLng, lat, lng);
-    var distanceText = card.querySelector(".distance");
-    distanceText.innerText = "📍 " + distance.toFixed(2) + " km away";
+    const distance = getDistance(userLat, userLng, lat, lng);
+    const distEl = card.querySelector(".distance");
 
-    if (isNaN(selectedRange) || selectedRange === 0 || distance <= selectedRange) {
+    if (distance <= selectedRange) {
       card.style.display = "block";
+      distEl.innerText = "📍 " + distance.toFixed(2) + " km away";
+      visibleCount++;
     } else {
       card.style.display = "none";
     }
   });
+
+  if (visibleCount === 0) {
+    const container = document.getElementById("stationsContainer");
+    const msg = document.getElementById("no-nearby-msg");
+    if (!msg) {
+      const div = document.createElement("div");
+      div.id = "no-nearby-msg";
+      div.className = "col-12";
+      div.innerHTML = `<p style="text-align:center;color:#5a7a5e;padding:40px 0;font-size:0.95rem;">
+        🔍 No stations found within ${selectedRange} km of your location.</p>`;
+      container.appendChild(div);
+    }
+  } else {
+    const msg = document.getElementById("no-nearby-msg");
+    if (msg) msg.remove();
+  }
 }
 
-document.getElementById("rangeSelect").addEventListener("change", function() {
-  if (userLat !== null) {
-    calculateDistances();
-  } else {
-    useLocation();
+// ── ON PAGE LOAD — restore saved location ──
+window.onload = function() {
+  const lat = localStorage.getItem("lat");
+  const lng = localStorage.getItem("lng");
+  const autoNearMe = localStorage.getItem("autoNearMe");
+
+  if (lat && lng) {
+    userLat = parseFloat(lat);
+    userLng = parseFloat(lng);
+
+    if (autoNearMe === "true") {
+      localStorage.removeItem("autoNearMe");
+      document.getElementById("rangeSelect").value = "100";
+      calculateDistances();
+    }
+  }
+};
+
+// ── RANGE DROPDOWN CHANGE ──
+document.addEventListener("DOMContentLoaded", function() {
+  // Add 100 KM option if not present
+  const range = document.getElementById("rangeSelect");
+  if (range) {
+    let has100 = false;
+    for (let opt of range.options) {
+      if (opt.value === "100") { has100 = true; break; }
+    }
+    if (!has100) {
+      const opt = document.createElement("option");
+      opt.value = "100";
+      opt.text = "Within 100 KM";
+      range.insertBefore(opt, range.options[range.options.length - 1]);
+    }
+    range.addEventListener("change", calculateDistances);
   }
 });
 </script>
