@@ -1,90 +1,85 @@
-from flask import Flask, render_template, request
-import sqlite3
 import os
+import pandas as pd
+from flask import Flask, render_template, request, jsonify
 
 app = Flask(__name__)
 
-DB_PATH = os.path.join(os.path.dirname(__file__), 'database', 'ev_data.db')
+DATASET_PATH = os.path.join(os.path.dirname(__file__), "ev_stations.xlsx")
 
+def load_stations(city_filter=None):
+    if not os.path.exists(DATASET_PATH):
+        return [], f"File not found: {DATASET_PATH}"
 
-def get_connection():
-    if not os.path.exists(DB_PATH):
-        raise RuntimeError(
-            f"Database not found at: {DB_PATH}. "
-            "Make sure 'database/ev_data.db' exists next to app.py."
-        )
-    conn = sqlite3.connect(DB_PATH)
-    conn.row_factory = sqlite3.Row
-    return conn
-
-
-@app.route('/')
-def home():
-    return render_template('index.html')
-
-
-@app.route('/stations')
-def stations():
     try:
-        conn = get_connection()
-        data = conn.execute("SELECT * FROM stations").fetchall()
-        conn.close()
-    except Exception as e:
-        return render_template('stations.html', stations=[], db_error=str(e))
-    return render_template('stations.html', stations=data)
+        df = pd.read_excel(DATASET_PATH, sheet_name=0, dtype=str)
+    except Exception as exc:
+        return [], f"Could not open Excel file — {exc}"
 
+    df.columns = [str(c).strip().lower() for c in df.columns]
 
-@app.route('/search', methods=['GET', 'POST'])
-def search():
-    if request.method == 'POST':
-        city = request.form.get('city', '').strip()
-    else:
-        city = request.args.get('city', '').strip()
+    print("Columns found:", list(df.columns))
+    print("Total rows:", len(df))
 
-    if not city:
+    required_cols = {"name", "city", "address", "type", "latitude", "longitude"}
+    missing = required_cols - set(df.columns)
+    if missing:
+        return [], f"Missing columns in Excel: {', '.join(sorted(missing))}"
+
+    df = df.dropna(subset=["name", "city", "latitude", "longitude"])
+
+    if city_filter and city_filter.strip():
+        keyword = city_filter.strip().lower()
+        df = df[df["city"].str.strip().str.lower().str.contains(keyword, na=False)]
+
+    def safe_float(val):
         try:
-            conn = get_connection()
-            data = conn.execute("SELECT * FROM stations").fetchall()
-            conn.close()
-        except Exception as e:
-            return render_template('stations.html', stations=[], db_error=str(e))
-        return render_template('stations.html', stations=data, search_query='')
+            return float(val)
+        except (TypeError, ValueError):
+            return 0.0
 
-    city_lower = city.lower()
+    stations = []
+    for _, row in df.iterrows():
+        stations.append({
+            "name":      str(row.get("name", "")).strip(),
+            "city":      str(row.get("city", "")).strip(),
+            "address":   str(row.get("address", "")).strip(),
+            "type":      str(row.get("type", "")).strip(),
+            "latitude":  safe_float(row.get("latitude")),
+            "longitude": safe_float(row.get("longitude")),
+        })
 
-    try:
-        conn = get_connection()
-        query = "SELECT * FROM stations WHERE LOWER(TRIM(city)) LIKE ?"
-        data = conn.execute(query, ('%' + city_lower + '%',)).fetchall()
-        conn.close()
-    except Exception as e:
-        return render_template('stations.html', stations=[], db_error=str(e))
-
-    return render_template('stations.html', stations=data, search_query=city)
+    return stations, None
 
 
-@app.route('/about')
+@app.route("/")
+def home():
+    return render_template("index.html")
+
+
+@app.route("/stations")
+def stations():
+    data, err = load_stations()
+    if err:
+        return render_template("stations.html", stations=[], db_error=err)
+    return render_template("stations.html", stations=data)
+
+
+@app.route("/search", methods=["POST"])
+def search():
+    city = request.form.get("city", "").strip()
+    if not city:
+        data, err = load_stations()
+    else:
+        data, err = load_stations(city_filter=city)
+    if err:
+        return render_template("stations.html", stations=[], db_error=err)
+    return render_template("stations.html", stations=data)
+
+
+@app.route("/about")
 def about():
-    products = []
-    # Replace with real DB query if you have a products table:
-    # try:
-    #     conn = get_connection()
-    #     products = conn.execute("SELECT * FROM products").fetchall()
-    #     conn.close()
-    # except Exception:
-    #     products = []
-    return render_template('about.html', products=products)
+    return render_template("about.html")
 
 
-@app.errorhandler(404)
-def not_found(e):
-    return render_template('index.html'), 404
-
-
-@app.errorhandler(405)
-def method_not_allowed(e):
-    return render_template('stations.html', stations=[], db_error=None), 405
-
-
-if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0', port=5000)
+if __name__ == "__main__":
+    app.run(debug=True)
