@@ -2,368 +2,55 @@
 <html>
 <head>
 <title>Innvoltix — EV Charging Stations</title>
-
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <style>
 *, *::before, *::after { box-sizing: border-box; }
-
-body {
-  background-color: #f2f5f2;
-  font-family: 'Poppins', sans-serif;
-  margin: 0;
-  color: #1c2e1e;
-}
-
-/* ── TOP ANNOUNCEMENT BAR ── */
-.announcement-bar {
-  background-color: #1a6b2f;
-  color: rgba(255,255,255,0.92);
-  text-align: center;
-  font-size: 0.78rem;
-  font-weight: 500;
-  letter-spacing: 0.4px;
-  padding: 7px 16px;
-}
-
-/* ── HEADER ── */
-header {
-  background: #fff;
-  border-bottom: 1px solid #d8e8da;
-  padding: 0 36px;
-  height: 62px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  position: sticky;
-  top: 0;
-  z-index: 200;
-}
-
-.logo-wrap {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.logo-icon {
-  width: 34px;
-  height: 34px;
-  background: #1a6b2f;
-  border-radius: 8px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 16px;
-}
-
-.logo-text {
-  font-size: 1.2rem;
-  font-weight: 700;
-  color: #1a6b2f;
-  letter-spacing: 0.5px;
-  margin: 0;
-}
-
-nav a {
-  margin-left: 28px;
-  text-decoration: none;
-  color: #3a4a3c;
-  font-weight: 500;
-  font-size: 0.9rem;
-  padding-bottom: 2px;
-  border-bottom: 2px solid transparent;
-  transition: color 0.2s, border-color 0.2s;
-}
-
-nav a:hover {
-  color: #1a6b2f;
-  border-bottom-color: #1a6b2f;
-}
-
-/* ── HERO ── */
-.card-bg2 {
-  background-image: url("/static/bg1.jpeg");
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-  padding: 90px 48px 80px;
-  position: relative;
-}
-
-.card-bg2::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(120deg, rgba(0,35,10,0.62) 0%, rgba(0,60,20,0.3) 100%);
-}
-
-.hero-content {
-  position: relative;
-  z-index: 1;
-  max-width: 620px;
-}
-
-.hero-badge {
-  display: inline-block;
-  background: rgba(255,255,255,0.15);
-  border: 1px solid rgba(255,255,255,0.35);
-  color: #d4f5de;
-  font-size: 0.75rem;
-  font-weight: 600;
-  letter-spacing: 1px;
-  text-transform: uppercase;
-  padding: 5px 14px;
-  border-radius: 20px;
-  margin-bottom: 18px;
-}
-
-.hero-content h1 {
-  font-size: 2.4rem;
-  font-weight: 700;
-  color: #fff;
-  line-height: 1.25;
-  margin-bottom: 14px;
-}
-
-.hero-content p {
-  font-size: 1.05rem;
-  font-weight: 300;
-  color: rgba(255,255,255,0.82);
-  margin-bottom: 28px;
-}
-
-.hero-btn {
-  display: inline-block;
-  background: #fff;
-  color: #1a6b2f;
-  font-size: 0.9rem;
-  font-weight: 700;
-  padding: 12px 28px;
-  border-radius: 8px;
-  text-decoration: none;
-  letter-spacing: 0.3px;
-  transition: background 0.2s, transform 0.15s;
-}
-
-.hero-btn:hover {
-  background: #e8f5eb;
-  transform: translateY(-2px);
-  color: #145826;
-}
-
-/* ── SECTION WRAPPER ── */
-.section-wrap {
-  padding: 56px 0 12px;
-}
-
-/* ── SECTION HEADINGS ── */
-.section-label {
-  text-align: center;
-  font-size: 0.72rem;
-  font-weight: 700;
-  letter-spacing: 2px;
-  text-transform: uppercase;
-  color: #2e9e50;
-  margin-bottom: 6px;
-}
-
-.section-title {
-  text-align: center;
-  font-size: 1.45rem;
-  font-weight: 700;
-  color: #142b18;
-  margin-bottom: 4px;
-}
-
-.section-divider {
-  width: 44px;
-  height: 3px;
-  background: #2e9e50;
-  border-radius: 2px;
-  margin: 10px auto 36px;
-}
-
-/* ── STEP NUMBER BADGE ── */
-.step-num {
-  width: 28px;
-  height: 28px;
-  background: #e6f4ea;
-  border: 1.5px solid #a8d9b2;
-  border-radius: 50%;
-  font-size: 0.75rem;
-  font-weight: 700;
-  color: #1a6b2f;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin: 0 auto 8px;
-}
-
-/* ── CARDS ── */
-.card {
-  width: 100%;
-  margin: auto;
-  border: 1px solid #dceade;
-  border-top: 3px solid #2e9e50;
-  border-radius: 12px;
-  transition: transform 0.22s ease, box-shadow 0.22s ease;
-  background: #fff;
-}
-
-.card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 10px 28px rgba(20, 100, 40, 0.11);
-}
-
-.card img {
-  width: 76px;
-  height: 76px;
-  object-fit: contain;
-  margin: 18px auto 0;
-  display: block;
-}
-
-.card-body {
-  font-size: 0.83rem;
-  font-weight: 600;
-  color: #1c3520;
-  padding: 10px 8px 18px;
-  line-height: 1.4;
-}
-
-/* ── FEATURE PILL ── */
-.feature-pill {
-  display: inline-block;
-  background: #e8f5eb;
-  color: #1a6b2f;
-  font-size: 0.7rem;
-  font-weight: 700;
-  letter-spacing: 0.5px;
-  padding: 3px 10px;
-  border-radius: 20px;
-  margin-bottom: 10px;
-  border: 1px solid #c0dfc8;
-}
-
-/* ── VIEW STATIONS BUTTON ── */
-.btn-view {
-  background: #1a6b2f;
-  color: #fff;
-  border: none;
-  border-radius: 8px;
-  padding: 13px 32px;
-  font-size: 0.95rem;
-  font-weight: 600;
-  font-family: 'Poppins', sans-serif;
-  letter-spacing: 0.3px;
-  transition: background 0.2s, transform 0.15s;
-  width: 100%;
-  cursor: pointer;
-}
-
-.btn-view:hover {
-  background: #145826;
-  transform: translateY(-2px);
-  color: #fff;
-}
-
-/* ── SECTION BG TINT ── */
-.bg-tint {
-  background-color: #edf3ee;
-  padding-bottom: 40px;
-  border-top: 1px solid #d8e8da;
-  border-bottom: 1px solid #d8e8da;
-}
-
-/* ── WHY CHOOSE scroll row ── */
+body { background-color: #f2f5f2; font-family: 'Poppins', sans-serif; margin: 0; color: #1c2e1e; }
+.announcement-bar { background-color: #1a6b2f; color: rgba(255,255,255,0.92); text-align: center; font-size: 0.78rem; font-weight: 500; letter-spacing: 0.4px; padding: 7px 16px; }
+header { background: #fff; border-bottom: 1px solid #d8e8da; padding: 0 36px; height: 62px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 200; }
+.logo-wrap { display: flex; align-items: center; gap: 10px; }
+.logo-icon { width: 34px; height: 34px; background: #1a6b2f; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 16px; }
+.logo-text { font-size: 1.2rem; font-weight: 700; color: #1a6b2f; letter-spacing: 0.5px; margin: 0; }
+nav a { margin-left: 28px; text-decoration: none; color: #3a4a3c; font-weight: 500; font-size: 0.9rem; padding-bottom: 2px; border-bottom: 2px solid transparent; transition: color 0.2s, border-color 0.2s; }
+nav a:hover { color: #1a6b2f; border-bottom-color: #1a6b2f; }
+.card-bg2 { background-image: url("/static/bg1.jpeg"); background-size: cover; background-position: center; background-repeat: no-repeat; padding: 90px 48px 80px; position: relative; }
+.card-bg2::before { content: ''; position: absolute; inset: 0; background: linear-gradient(120deg, rgba(0,35,10,0.62) 0%, rgba(0,60,20,0.3) 100%); }
+.hero-content { position: relative; z-index: 1; max-width: 620px; }
+.hero-badge { display: inline-block; background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.35); color: #d4f5de; font-size: 0.75rem; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; padding: 5px 14px; border-radius: 20px; margin-bottom: 18px; }
+.hero-content h1 { font-size: 2.4rem; font-weight: 700; color: #fff; line-height: 1.25; margin-bottom: 14px; }
+.hero-content p { font-size: 1.05rem; font-weight: 300; color: rgba(255,255,255,0.82); margin-bottom: 28px; }
+.hero-btn { display: inline-block; background: #fff; color: #1a6b2f; font-size: 0.9rem; font-weight: 700; padding: 12px 28px; border-radius: 8px; text-decoration: none; letter-spacing: 0.3px; transition: background 0.2s, transform 0.15s; }
+.hero-btn:hover { background: #e8f5eb; transform: translateY(-2px); color: #145826; }
+.section-wrap { padding: 56px 0 12px; }
+.section-label { text-align: center; font-size: 0.72rem; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: #2e9e50; margin-bottom: 6px; }
+.section-title { text-align: center; font-size: 1.45rem; font-weight: 700; color: #142b18; margin-bottom: 4px; }
+.section-divider { width: 44px; height: 3px; background: #2e9e50; border-radius: 2px; margin: 10px auto 36px; }
+.step-num { width: 28px; height: 28px; background: #e6f4ea; border: 1.5px solid #a8d9b2; border-radius: 50%; font-size: 0.75rem; font-weight: 700; color: #1a6b2f; display: flex; align-items: center; justify-content: center; margin: 0 auto 8px; }
+.card { width: 100%; margin: auto; border: 1px solid #dceade; border-top: 3px solid #2e9e50; border-radius: 12px; transition: transform 0.22s ease, box-shadow 0.22s ease; background: #fff; }
+.card:hover { transform: translateY(-5px); box-shadow: 0 10px 28px rgba(20,100,40,0.11); }
+.card img { width: 76px; height: 76px; object-fit: contain; margin: 18px auto 0; display: block; }
+.card-body { font-size: 0.83rem; font-weight: 600; color: #1c3520; padding: 10px 8px 18px; line-height: 1.4; }
+.feature-pill { display: inline-block; background: #e8f5eb; color: #1a6b2f; font-size: 0.7rem; font-weight: 700; letter-spacing: 0.5px; padding: 3px 10px; border-radius: 20px; margin-bottom: 10px; border: 1px solid #c0dfc8; }
+.btn-view { background: #1a6b2f; color: #fff; border: none; border-radius: 8px; padding: 13px 32px; font-size: 0.95rem; font-weight: 600; font-family: 'Poppins', sans-serif; letter-spacing: 0.3px; transition: background 0.2s, transform 0.15s; width: 100%; cursor: pointer; }
+.btn-view:hover { background: #145826; transform: translateY(-2px); color: #fff; }
+.bg-tint { background-color: #edf3ee; padding-bottom: 40px; border-top: 1px solid #d8e8da; border-bottom: 1px solid #d8e8da; }
 @media (max-width: 576px) {
-  .scroll-row {
-    display: flex;
-    overflow-x: auto;
-    flex-wrap: nowrap;
-    gap: 14px;
-    padding: 10px 4px;
-    scroll-snap-type: x mandatory;
-    scrollbar-width: none;
-  }
+  .scroll-row { display: flex; overflow-x: auto; flex-wrap: nowrap; gap: 14px; padding: 10px 4px; scroll-snap-type: x mandatory; scrollbar-width: none; }
   .scroll-row::-webkit-scrollbar { display: none; }
-  .scroll-card {
-    flex: 0 0 48%;
-    scroll-snap-align: start;
-    flex-shrink: 0;
-  }
+  .scroll-card { flex: 0 0 48%; scroll-snap-align: start; flex-shrink: 0; }
 }
-
-/* ── CTA BAND ── */
-.card-bg {
-  background-image: url("/static/bg2.jpeg");
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-  padding: 64px 40px 52px;
-  position: relative;
-}
-
-.card-bg::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: rgba(240,250,242,0.84);
-  backdrop-filter: blur(4px);
-}
-
-.cta-content {
-  position: relative;
-  z-index: 1;
-}
-
-.cta-content h3 {
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: #1a4d28;
-  margin-bottom: 10px;
-}
-
-.cta-content p {
-  font-size: 0.88rem;
-  color: #4a6450;
-  margin-bottom: 28px;
-}
-
-/* ── FOOTER ── */
-footer {
-  background: #112918;
-  padding: 24px 36px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 10px;
-}
-
-.footer-brand {
-  font-size: 1rem;
-  font-weight: 700;
-  color: #a8d9b2;
-  letter-spacing: 0.5px;
-}
-
-.footer-info {
-  font-size: 0.78rem;
-  color: rgba(255,255,255,0.5);
-  text-align: right;
-}
-
-.footer-info a {
-  color: #7fcb90;
-  text-decoration: none;
-}
-
+.card-bg { background-image: url("/static/bg2.jpeg"); background-size: cover; background-position: center; background-repeat: no-repeat; padding: 64px 40px 52px; position: relative; }
+.card-bg::before { content: ''; position: absolute; inset: 0; background: rgba(240,250,242,0.84); backdrop-filter: blur(4px); }
+.cta-content { position: relative; z-index: 1; }
+.cta-content h3 { font-size: 1.5rem; font-weight: 700; color: #1a4d28; margin-bottom: 10px; }
+.cta-content p { font-size: 0.88rem; color: #4a6450; margin-bottom: 28px; }
+footer { background: #112918; padding: 24px 36px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
+.footer-brand { font-size: 1rem; font-weight: 700; color: #a8d9b2; letter-spacing: 0.5px; }
+.footer-info { font-size: 0.78rem; color: rgba(255,255,255,0.5); text-align: right; }
+.footer-info a { color: #7fcb90; text-decoration: none; }
 .footer-info a:hover { text-decoration: underline; }
-
-/* ── RESPONSIVE ── */
 @media (max-width: 576px) {
   .card-bg2 { padding: 56px 20px 44px; }
   .hero-content h1 { font-size: 1.6rem; }
@@ -376,12 +63,10 @@ footer {
 </head>
 <body>
 
-<!-- ANNOUNCEMENT BAR -->
 <div class="announcement-bar">
   🌱 &nbsp; India's clean mobility starts here — explore verified EV charging points near you
 </div>
 
-<!-- HEADER -->
 <header>
   <div class="logo-wrap">
     <div class="logo-icon">⚡</div>
@@ -394,7 +79,6 @@ footer {
   </nav>
 </header>
 
-<!-- HERO -->
 <div class="card-bg2">
   <div class="hero-content">
     <div class="hero-badge">⚡ EV Station Locator</div>
@@ -404,15 +88,12 @@ footer {
   </div>
 </div>
 
-<!-- HOW IT WORKS -->
 <div class="section-wrap">
   <p class="section-label">Step by Step</p>
   <h2 class="section-title">How It Works</h2>
   <div class="section-divider"></div>
-
   <div class="container">
     <div class="row justify-content-center g-4">
-
       <div class="col-6 col-sm-6 col-md-4 col-lg-3">
         <div class="card text-center p-3">
           <div class="step-num">1</div>
@@ -420,7 +101,6 @@ footer {
           <div class="card-body">Enter your Area</div>
         </div>
       </div>
-
       <div class="col-6 col-sm-6 col-md-4 col-lg-3">
         <div class="card text-center p-3">
           <div class="step-num">2</div>
@@ -428,7 +108,6 @@ footer {
           <div class="card-body">See Nearby Chargers</div>
         </div>
       </div>
-
       <div class="col-6 col-sm-6 col-md-4 col-lg-3">
         <div class="card text-center p-3">
           <div class="step-num">3</div>
@@ -436,7 +115,6 @@ footer {
           <div class="card-body">View Charging Section</div>
         </div>
       </div>
-
       <div class="col-6 col-sm-6 col-md-4 col-lg-3">
         <div class="card text-center p-3">
           <div class="step-num">4</div>
@@ -444,21 +122,17 @@ footer {
           <div class="card-body">Get Directions to the Station</div>
         </div>
       </div>
-
     </div>
   </div>
 </div>
 
-<!-- KEY FEATURES -->
 <div class="bg-tint">
   <div class="section-wrap">
     <p class="section-label">What We Offer</p>
     <h2 class="section-title">Key Features</h2>
     <div class="section-divider"></div>
-
     <div class="container">
       <div class="row justify-content-center g-4">
-
         <div class="col-6 col-sm-6 col-md-4 col-lg-3">
           <div class="card text-center p-3">
             <div class="feature-pill">Search</div>
@@ -466,7 +140,6 @@ footer {
             <div class="card-body">Search by Area</div>
           </div>
         </div>
-
         <div class="col-6 col-sm-6 col-md-4 col-lg-3">
           <div class="card text-center p-3">
             <div class="feature-pill">Info</div>
@@ -474,7 +147,6 @@ footer {
             <div class="card-body">Get Charging Station Info</div>
           </div>
         </div>
-
         <div class="col-6 col-sm-6 col-md-4 col-lg-3">
           <div class="card text-center p-3">
             <div class="feature-pill">Listings</div>
@@ -482,7 +154,6 @@ footer {
             <div class="card-body">Extensive EV Station Listings</div>
           </div>
         </div>
-
         <div class="col-6 col-sm-6 col-md-4 col-lg-3">
           <div class="card text-center p-3">
             <div class="feature-pill">UX</div>
@@ -490,13 +161,11 @@ footer {
             <div class="card-body">Friendly &amp; Intuitive Interface</div>
           </div>
         </div>
-
       </div>
     </div>
   </div>
 </div>
 
-<!-- VIEW STATIONS BUTTON -->
 <div class="container">
   <div class="row justify-content-center">
     <div class="col-md-3 col-8 my-5">
@@ -507,41 +176,34 @@ footer {
   </div>
 </div>
 
-<!-- WHY CHOOSE US -->
 <div class="section-wrap" style="padding-bottom:48px;">
   <p class="section-label">Our Advantage</p>
   <h2 class="section-title">Why Choose Us?</h2>
   <div class="section-divider"></div>
-
   <div class="container-fluid">
     <div class="row justify-content-center g-4 scroll-row">
-
       <div class="col-6 col-sm-6 col-md-4 col-lg-3 scroll-card">
         <div class="card text-center p-3" style="height:100%">
           <img src="{{ url_for('static', filename='fast.jpg') }}">
           <div class="card-body">Fast Charging</div>
         </div>
       </div>
-
       <div class="col-6 col-sm-6 col-md-4 col-lg-3 scroll-card">
         <div class="card text-center p-3" style="height:100%">
           <img src="{{ url_for('static', filename='loc.png') }}">
           <div class="card-body">Easy Access</div>
         </div>
       </div>
-
       <div class="col-6 col-sm-6 col-md-4 col-lg-3 scroll-card">
         <div class="card text-center p-3" style="height:100%">
           <img src="{{ url_for('static', filename='eco.jpg') }}">
           <div class="card-body">Eco Friendly</div>
         </div>
       </div>
-
     </div>
   </div>
 </div>
 
-<!-- CTA BAND -->
 <div class="card-bg">
   <div class="cta-content text-center">
     <h3>Start Finding EV Charging Stations Today!</h3>
@@ -550,7 +212,6 @@ footer {
   </div>
 </div>
 
-<!-- FOOTER -->
 <footer>
   <span class="footer-brand">⚡ Innvoltix</span>
   <div class="footer-info">
