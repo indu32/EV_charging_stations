@@ -1,0 +1,417 @@
+"""
+ocpp_ws_server.py  —  OCPP 2.0.1 WebSocket Server
+===================================================
+• Listens on ws://0.0.0.0:9000/ocpp/<station_id>
+• Handles: BootNotification, Heartbeat, StatusNotification,
+           MeterValues, TransactionEvent (Started / Updated / Ended)
+• Maintains live charger state in CHARGER_STATE dict
+• Broadcasts state updates to all UI listeners on ws://…/ui
+• Flask app.py can query state via REST: GET /api/charger-status
+
+Run alongside Flask:
+    python ocpp_ws_server.py
+or import and call start_ocpp_server() in a thread from app.py
+"""
+
+import asyncio
+import json
+import logging
+import uuid
+from datetime import datetime, timezone
+from typing import Dict, Any
+
+import websockets
+from websockets.server import WebSocketServerProtocol
+
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s [OCPP] %(levelname)s — %(message)s",
+    datefmt="%H:%M:%S"
+)
+log = logging.getLogger("ocpp_server")
+
+# ── Live State Store ──────────────────────────────────────────────────────────
+# Structure:
+#   CHARGER_STATE[station_id] = {
+#       "station_id": str,
+#       "station_name": str,
+#       "connected": bool,
+#       "last_heartbeat": ISO str,
+#       "connectors": {
+#           connector_id (int): {
+#               "status":        "Available" | "Preparing" | "Charging" |
+#                                "SuspendedEVSE" | "Finishing" | "Faulted" |
+#                                "Unavailable" | "Reserved" | "Unknown"
+#               "error_code":    str,
+#               "transaction_id": str | None,
+#               "vehicle_id":    str | None,
+#               "energy_kwh":    float,
+#               "power_kw":      float,
+#               "duration_min":  float,
+#               "session_start": ISO str | None,
+#           }
+#       }
+#   }
+
+CHARGER_STATE: Dict[str, Any] = {}
+
+# UI listener WebSockets (browser clients)
+UI_LISTENERS: set = set()
+
+# OCPP charger WebSockets  station_id → websocket
+CHARGER_CONNECTIONS: Dict[str, WebSocketServerProtocol] = {}
+
+
+# ── Broadcast helpers ─────────────────────────────────────────────────────────
+
+async def broadcast_state(station_id: str):
+    """Send updated station state to all connected UI browsers."""
+    if not UI_LISTENERS:
+        return
+    payload = json.dumps({
+        "event": "state_update",
+        "station_id": station_id,
+        "data": CHARGER_STATE.get(station_id, {})
+    })
+    dead = set()
+    for ws in UI_LISTENERS:
+        try:
+            await ws.send(payload)
+        except Exception:
+            dead.add(ws)
+    UI_LISTENERS -= dead
+
+
+async def broadcast_all():
+    """Broadcast full state to a newly connected UI listener."""
+    payload = json.dumps({
+        "event": "full_state",
+        "data": CHARGER_STATE
+    })
+    dead = set()
+    for ws in UI_LISTENERS:
+        try:
+            await ws.send(payload)
+        except Exception:
+            dead.add(ws)
+    UI_LISTENERS -= dead
+
+
+def ts_now() -> str:
+    return datetime.now(timezone.utc).isoformat()
+
+
+def get_or_create_station(station_id: str) -> dict:
+    if station_id not in CHARGER_STATE:
+        CHARGER_STATE[station_id] = {
+            "station_id": station_id,
+            "station_name": station_id,
+            "connected": False,
+            "last_heartbeat": None,
+            "firmware_version": None,
+            "model": None,
+            "vendor": None,
+            "connectors": {}
+        }
+    return CHARGER_STATE[station_id]
+
+
+def get_or_create_connector(station_id: str, connector_id: int) -> dict:
+    state = get_or_create_station(station_id)
+    if connector_id not in state["connectors"]:
+        state["connectors"][connector_id] = {
+            "status": "Unknown",
+            "error_code": "NoError",
+            "transaction_id": None,
+            "vehicle_id": None,
+            "energy_kwh": 0.0,
+            "power_kw": 0.0,
+            "duration_min": 0.0,
+            "session_start": None,
+        }
+    return state["connectors"][connector_id]
+
+
+# ── OCPP Message Handlers ─────────────────────────────────────────────────────
+
+async def handle_boot_notification(station_id: str, payload: dict) -> dict:
+    state = get_or_create_station(station_id)
+    state["connected"] = True
+    state["vendor"] = payload.get("chargingStation", {}).get("vendorName", "")
+    state["model"] = payload.get("chargingStation", {}).get("model", "")
+    state["firmware_version"] = payload.get("chargingStation", {}).get("firmwareVersion", "")
+    state["station_name"] = payload.get("chargingStation", {}).get("serialNumber", station_id)
+    log.info(f"BootNotification from {station_id} — model: {state['model']}")
+    return {
+        "currentTime": ts_now(),
+        "interval": 30,        # heartbeat every 30 s
+        "status": "Accepted"
+    }
+
+
+async def handle_heartbeat(station_id: str, payload: dict) -> dict:
+    state = get_or_create_station(station_id)
+    state["last_heartbeat"] = ts_now()
+    state["connected"] = True
+    return {"currentTime": ts_now()}
+
+
+async def handle_status_notification(station_id: str, payload: dict) -> dict:
+    """OCPP 2.0.1 StatusNotification"""
+    connector_id = payload.get("connectorId", 0)
+    evse_id = payload.get("evseId", 1)
+    status = payload.get("connectorStatus", "Unknown")
+    error_code = payload.get("errorCode", "NoError")
+
+    conn = get_or_create_connector(station_id, connector_id)
+    conn["status"] = status
+    conn["error_code"] = error_code
+    log.info(f"StatusNotification {station_id}:EVSE{evse_id}:C{connector_id} → {status}")
+    return {}
+
+
+async def handle_transaction_event(station_id: str, payload: dict) -> dict:
+    """OCPP 2.0.1 TransactionEvent"""
+    event_type = payload.get("eventType", "")           # Started / Updated / Ended
+    connector_id = payload.get("evse", {}).get("connectorId", 1)
+    tx_info = payload.get("transactionInfo", {})
+    tx_id = tx_info.get("transactionId", str(uuid.uuid4()))
+    id_token = payload.get("idToken", {}).get("idToken", "")
+
+    conn = get_or_create_connector(station_id, connector_id)
+
+    # Parse meter values from the event
+    energy_kwh = 0.0
+    power_kw = 0.0
+    duration_min = 0.0
+    for mv in payload.get("meterValue", []):
+        for sv in mv.get("sampledValue", []):
+            measurand = sv.get("measurand", "")
+            val = float(sv.get("value", 0))
+            if measurand == "Energy.Active.Import.Register":
+                energy_kwh = val
+            elif measurand == "Power.Active.Import":
+                power_kw = val
+            elif measurand == "Session.Duration":
+                duration_min = val
+
+    if event_type == "Started":
+        conn["transaction_id"] = tx_id
+        conn["vehicle_id"] = id_token
+        conn["session_start"] = ts_now()
+        conn["status"] = "Charging"
+        conn["energy_kwh"] = 0.0
+        conn["power_kw"] = power_kw
+        conn["duration_min"] = 0.0
+        log.info(f"Transaction STARTED {station_id}:C{connector_id} txn={tx_id}")
+
+    elif event_type == "Updated":
+        conn["energy_kwh"] = energy_kwh
+        conn["power_kw"] = power_kw
+        conn["duration_min"] = duration_min
+        conn["status"] = tx_info.get("chargingState", "Charging")
+        log.info(f"Transaction UPDATED {station_id}:C{connector_id} {energy_kwh:.2f} kWh")
+
+    elif event_type == "Ended":
+        conn["energy_kwh"] = energy_kwh
+        conn["power_kw"] = 0.0
+        conn["duration_min"] = duration_min
+        conn["status"] = "Finishing"
+        conn["transaction_id"] = None
+        conn["vehicle_id"] = None
+        conn["session_start"] = None
+        log.info(f"Transaction ENDED {station_id}:C{connector_id} {energy_kwh:.2f} kWh / {duration_min:.1f} min")
+
+    return {"idTokenInfo": {"status": "Accepted"}}
+
+
+async def handle_meter_values(station_id: str, payload: dict) -> dict:
+    """Standalone MeterValues message (periodic updates during charge)"""
+    evse_id = payload.get("evseId", 1)
+    connector_id = 1   # default; OCPP 2.0.1 uses EVSE model
+    conn = get_or_create_connector(station_id, connector_id)
+
+    for mv in payload.get("meterValue", []):
+        for sv in mv.get("sampledValue", []):
+            measurand = sv.get("measurand", "")
+            val = float(sv.get("value", 0))
+            if measurand == "Energy.Active.Import.Register":
+                conn["energy_kwh"] = val
+            elif measurand == "Power.Active.Import":
+                conn["power_kw"] = val
+            elif measurand == "Session.Duration":
+                conn["duration_min"] = val
+
+    log.info(f"MeterValues {station_id}:EVSE{evse_id} {conn['energy_kwh']:.2f} kWh")
+    return {}
+
+
+# ── OCPP Message Router ───────────────────────────────────────────────────────
+
+HANDLERS = {
+    "BootNotification":    handle_boot_notification,
+    "Heartbeat":           handle_heartbeat,
+    "StatusNotification":  handle_status_notification,
+    "TransactionEvent":    handle_transaction_event,
+    "MeterValues":         handle_meter_values,
+}
+
+async def process_ocpp_message(station_id: str, raw: str) -> str | None:
+    """Parse OCPP call, dispatch, return response frame or None."""
+    try:
+        msg = json.loads(raw)
+    except json.JSONDecodeError:
+        log.warning(f"Bad JSON from {station_id}: {raw[:80]}")
+        return None
+
+    msg_type = msg[0]
+
+    # CALL (2) — request from charger
+    if msg_type == 2:
+        msg_id, action, payload = msg[1], msg[2], msg[3]
+        handler = HANDLERS.get(action)
+        if handler:
+            try:
+                response_payload = await handler(station_id, payload)
+                await broadcast_state(station_id)
+                return json.dumps([3, msg_id, response_payload])
+            except Exception as exc:
+                log.error(f"Handler error [{action}]: {exc}")
+                return json.dumps([4, msg_id, "InternalError", str(exc), {}])
+        else:
+            log.warning(f"Unknown action: {action}")
+            return json.dumps([4, msg_id, "NotImplemented", f"Action '{action}' not supported", {}])
+
+    # CALLRESULT (3) / CALLERROR (4) — responses to server-initiated calls
+    elif msg_type in (3, 4):
+        log.debug(f"Response from {station_id}: {msg}")
+        return None
+
+    return None
+
+
+# ── WebSocket Connection Handlers ─────────────────────────────────────────────
+
+async def charger_handler(websocket: WebSocketServerProtocol):
+    """Handle a charger connecting on /ocpp/<station_id>"""
+    path = websocket.request.path if hasattr(websocket, "request") else getattr(websocket, "path", "/ocpp/UNKNOWN")
+    parts = path.rstrip("/").split("/")
+    station_id = parts[-1] if len(parts) > 1 else "UNKNOWN"
+
+    # Require OCPP subprotocol
+    if "ocpp2.0.1" not in (websocket.subprotocol or ""):
+        log.warning(f"Charger {station_id} missing OCPP subprotocol, proceeding anyway.")
+
+    CHARGER_CONNECTIONS[station_id] = websocket
+    state = get_or_create_station(station_id)
+    state["connected"] = True
+    log.info(f"Charger CONNECTED: {station_id}  (total: {len(CHARGER_CONNECTIONS)})")
+    await broadcast_state(station_id)
+
+    try:
+        async for raw in websocket:
+            response = await process_ocpp_message(station_id, raw)
+            if response:
+                await websocket.send(response)
+    except websockets.exceptions.ConnectionClosed as exc:
+        log.info(f"Charger DISCONNECTED: {station_id} — {exc.code}")
+    finally:
+        CHARGER_CONNECTIONS.pop(station_id, None)
+        s = CHARGER_STATE.get(station_id)
+        if s:
+            s["connected"] = False
+        await broadcast_state(station_id)
+
+
+async def ui_handler(websocket: WebSocketServerProtocol):
+    """Handle a browser UI client connecting on /ui"""
+    UI_LISTENERS.add(websocket)
+    log.info(f"UI client connected  (total: {len(UI_LISTENERS)})")
+    # Send full current state immediately
+    await websocket.send(json.dumps({
+        "event": "full_state",
+        "data": CHARGER_STATE
+    }))
+    try:
+        async for _ in websocket:
+            pass   # UI sends nothing; we just keep the connection alive
+    except websockets.exceptions.ConnectionClosed:
+        pass
+    finally:
+        UI_LISTENERS.discard(websocket)
+        log.info(f"UI client disconnected (remaining: {len(UI_LISTENERS)})")
+
+
+async def router(websocket: WebSocketServerProtocol):
+    """Route connections by URL path."""
+    path = websocket.request.path if hasattr(websocket, "request") else getattr(websocket, "path", "/")
+    if path.startswith("/ui"):
+        await ui_handler(websocket)
+    elif path.startswith("/ocpp"):
+        await charger_handler(websocket)
+    else:
+        log.warning(f"Unknown WebSocket path: {path}")
+        await websocket.close(1008, "Unknown path")
+
+
+# ── REST helper for Flask ─────────────────────────────────────────────────────
+
+def get_station_status_summary() -> dict:
+    """
+    Returns a flat dict of station_id → summary for Flask /api/charger-status.
+    Also computes available_slots / total_slots so stations.html can be updated
+    server-side on page load.
+    """
+    summary = {}
+    for sid, state in CHARGER_STATE.items():
+        connectors = state.get("connectors", {})
+        total = len(connectors)
+        available = sum(
+            1 for c in connectors.values()
+            if c.get("status") == "Available"
+        )
+        faulted = any(
+            c.get("status") in ("Faulted", "Unavailable")
+            for c in connectors.values()
+        )
+        summary[sid] = {
+            "station_id":      sid,
+            "station_name":    state.get("station_name", sid),
+            "connected":       state.get("connected", False),
+            "last_heartbeat":  state.get("last_heartbeat"),
+            "total_slots":     total,
+            "available_slots": available,
+            "status":          "faulted" if faulted else (
+                               "powercut" if not state.get("connected") else (
+                               "busy"      if available == 0 and total > 0 else
+                               "available")),
+            "connectors":      connectors,
+        }
+    return summary
+
+
+# ── Entry Point ───────────────────────────────────────────────────────────────
+
+async def main():
+    log.info("Starting OCPP 2.0.1 WebSocket server on ws://0.0.0.0:9000")
+    log.info("  Charger path : ws://<host>:9000/ocpp/<station_id>")
+    log.info("  UI path      : ws://<host>:9000/ui")
+
+    async with websockets.serve(
+        router,
+        "0.0.0.0",
+        9000,
+        subprotocols=["ocpp2.0.1"],
+        ping_interval=20,
+        ping_timeout=60,
+    ):
+        await asyncio.Future()   # run forever
+
+
+def start_ocpp_server():
+    """Call from a background thread in app.py."""
+    asyncio.run(main())
+
+
+if __name__ == "__main__":
+    asyncio.run(main())

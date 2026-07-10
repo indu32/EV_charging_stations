@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>MACH — EV Charging Stations</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.cdnfonts.com/css/lastica" rel="stylesheet">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<style>
+  /*lastica font for mach*/
+@font-face {
+  font-family: 'Lastica';
+  src: url('/static/fonts/NobodyTalks-oZo4.ttf') format('truetype');
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+body { background-color: #f2f5f2; font-family: 'Poppins', sans-serif; margin: 0; color: #1c2e1e; }
+.announcement-bar { background-color: #E53935; color: rgba(255,255,255,0.92); text-align: center; font-size: 0.78rem; font-weight: 500; letter-spacing: 0.4px; padding: 7px 16px; }
+header { background:white; border-bottom: 1px solid #d8e8da; padding: 0 36px; height: 62px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 200; }
+.logo-wrap {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* for image logo */
+.logo-icon {
+  height: 60px;        /* control height */
+  width: auto; 
+  max-width: 100%;        /* allow long width */
+  object-fit: contain; /* keep proportions */
+}
+
+/* optional: if you're keeping text */
+.logo-text {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #1a6b2f;
+  letter-spacing: 0.5px;
+  margin: 0;
+}
+.img-style  {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;   /* 🔥 this is the key */
+  display: block;
+}
+
+nav a { margin-left: 28px; text-decoration: none; color: #FF0000; font-weight: 500; font-size: 0.9rem; padding-bottom: 2px; border-bottom: 2px solid transparent; transition: color 0.2s, border-color 0.2s; }
+nav a:hover { color: #1a6b2f; border-bottom-color: #E53935; }
+.card-bg2 { background-image: url("/static/bgg.jpeg"); background-size: cover; background-position: center; background-repeat: no-repeat; padding: 90px 48px 80px; position: relative; }
+.card-bg3 { background-image: url("/static/logo2.jpeg"); background-size: cover; background-position: center; background-repeat: no-repeat; padding: 90px 48px 80px; position: relative; }
+.card-bg2::before { content: ''; position: absolute; inset: 0; background: linear-gradient(120deg, rgba(0,35,10,0.62) 0%, rgba(0,60,20,0.3) 100%); }
+.hero-content { position: relative; z-index: 1; max-width: 620px; }
+.hero-badge { display: inline-block;background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.35); color: #d4f5de; font-size: 0.75rem; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; padding: 5px 14px; border-radius: 20px; margin-bottom: 18px; }
+.hero-content h1 { font-size: 2.4rem; font-weight: 700; color:#ffffff; line-height: 1.25; margin-bottom: 14px; }
+.hero-content p { font-size: 1.05rem; font-weight: 300; color: whitesmoke; margin-bottom: 28px; }
+.hero-btn { display: inline-block; background: #fff; color: #E53935; font-size: 0.9rem; font-weight: 700; padding: 12px 28px; border-radius: 8px; text-decoration: none; letter-spacing: 0.3px; transition: background 0.2s, transform 0.15s; }
+.hero-btn:hover { background: #e8f5eb; transform: translateY(-2px); color: #E53935; }
+.section-wrap { padding: 56px 0 12px; }
+.section-label { text-align: center; font-size: 0.72rem; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: #E53935; margin-bottom: 6px; }
+.section-title { text-align: center; font-size: 1.45rem; font-weight: 700; color: #142b18; margin-bottom: 4px; }
+.section-divider { width: 44px; height: 3px; background: #E53935; border-radius: 2px; margin: 10px auto 36px; }
+.step-num { width: 28px; height: 28px; background: #FFCDD2; border: 1.5px solid #E53935; border-radius: 50%; font-size: 0.75rem; font-weight: 700; color: #000000; display: flex; align-items: center; justify-content: center; margin: 0 auto 8px; }
+.card { width: 100%; margin: auto; border: 1px solid #ffffff; border-top: 3px solid #E53935; border-radius: 12px; transition: transform 0.22s ease, box-shadow 0.22s ease; background: #fff; }
+.card:hover { transform: translateY(-5px); box-shadow: 0 10px 28px rgba(20,100,40,0.11); }
+.card img {
+  width: 100%;
+  height: 140px;       /* adjust (120–160) */
+  object-fit: cover;   /* 🔥 fills completely */
+  display: block;
+  margin: 0;
+  border-radius: 0px;
+}
+.card-body { font-size: 0.83rem; font-weight: 600; color: #1c3520; padding: 10px 8px 18px; line-height: 1.4; }
+.feature-pill { display: inline-block; background: #FFCDD2; color: #E53935; font-size: 0.7rem; font-weight: 700; letter-spacing: 0.5px; padding: 3px 10px; border-radius: 20px; margin-bottom: 10px; border: 1px solid #E53935; }
+.btn-view { background: #E53935; color: #fff; border: none; border-radius: 8px; padding: 13px 32px; font-size: 0.95rem; font-weight: 600; font-family: 'Poppins', sans-serif; letter-spacing: 0.3px; transition: background 0.2s, transform 0.15s; width: 100%; cursor: pointer; }
+.btn-view:hover { background: #E53935; transform: translateY(-2px); color: #fff; }
+.bg-tint { background-color: #edf3ee; padding-bottom: 40px; border-top: 1px solid #d8e8da; border-bottom: 1px solid #d8e8da; }
+@media (max-width: 576px) {
+  .scroll-row { display: flex; overflow-x: auto; flex-wrap: nowrap; gap: 14px; padding: 10px 4px; scroll-snap-type: x mandatory; scrollbar-width: none; }
+  .scroll-row::-webkit-scrollbar { display: none; }
+  .scroll-card { flex: 0 0 48%; scroll-snap-align: start; flex-shrink: 0; }
+}
+.card-bg { background-image: url("/static/bg2.jpeg"); background-size: cover; background-position: center; background-repeat: no-repeat; padding: 64px 40px 52px; position: relative; }
+.card-bg::before { content: ''; position: absolute; inset: 0; background: rgba(240,250,242,0.60); backdrop-filter: blur(4px); }
+.cta-content { position: relative; z-index: 1; }
+.cta-content h3 { font-size: 1.5rem; font-weight: 700; color: #000000; margin-bottom: 10px; }
+.cta-content p { font-size: 0.88rem; color: #000000; margin-bottom: 28px; }
+footer { background: #E53935; padding: 24px 36px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
+.footer-brand { font-size: 1rem; font-weight: 700; color: #ffffff; letter-spacing: 0.5px; }
+.footer-info { font-size: 0.78rem; color: #fff; text-align: right; }
+.footer-info a { color: #ffffff; text-decoration: none; }
+.footer-info a:hover { text-decoration: underline; }
+@media (max-width: 576px) {
+  .card-bg2 { padding: 56px 20px 44px; }
+  .hero-content h1 { font-size: 1.6rem; }
+  /* Fix card images on mobile — maintain proper ratio */
+  .card img { height: 90px; width: 100%; object-fit: cover; }
+  header { padding: 0 16px; }
+  footer { flex-direction: column; text-align: center; }
+  .footer-info { text-align: center; }
+  /* Feature/Why cards: 2-col grid is fine, but fix text overflow */
+  .card-body { font-size: 0.78rem; padding: 8px 6px 14px; }
+  /* Hero button full width on mobile */
+  .hero-btn { display: block; text-align: center; }
+  /* section wraps */
+  .section-wrap { padding: 36px 0 8px; }
+  .section-title { font-size: 1.2rem; }
+  /* CTA card */
+  .card-bg { padding: 44px 20px 36px; }
+  .cta-content h3 { font-size: 1.2rem; }
+}
+
+/* ── SCROLL REVEAL ANIMATIONS ── */
+.reveal {
+  opacity: 0;
+  transform: translateY(28px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+.reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+.reveal-delay-1 { transition-delay: 0.1s; }
+.reveal-delay-2 { transition-delay: 0.2s; }
+.reveal-delay-3 { transition-delay: 0.3s; }
+.reveal-delay-4 { transition-delay: 0.4s; }
+
+/* ── HERO ENTRANCE ── */
+@keyframes heroSlideIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.hero-badge  { animation: heroSlideIn 0.55s ease both; animation-delay: 0.1s; }
+.hero-content h1 { animation: heroSlideIn 0.55s ease both; animation-delay: 0.22s; }
+.hero-content p  { animation: heroSlideIn 0.55s ease both; animation-delay: 0.34s; }
+.hero-btn        { animation: heroSlideIn 0.55s ease both; animation-delay: 0.46s; }
+
+/* ── ANNOUNCEMENT BAR PULSE ── */
+.announcement-bar {
+  background: linear-gradient(90deg, #E53935 0%, #c62828 50%, #E53935 100%);
+  background-size: 200% 100%;
+  animation: barPulse 4s ease infinite;
+}
+@keyframes barPulse {
+  0%   { background-position: 0% 0%; }
+  50%  { background-position: 100% 0%; }
+  100% { background-position: 0% 0%; }
+}
+
+/* ── CARD SHIMMER ON HOVER ── */
+.card { position: relative; overflow: hidden; }
+.card::after {
+  content: '';
+  position: absolute;
+  top: 0; left: -100%;
+  width: 60%; height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.25), transparent);
+  transition: left 0.45s ease;
+  pointer-events: none;
+}
+.card:hover::after { left: 140%; }
+
+/* ── STEP NUMBER BOUNCE ── */
+.card:hover .step-num {
+  animation: bounce 0.4s ease;
+}
+@keyframes bounce {
+  0%   { transform: scale(1); }
+  40%  { transform: scale(1.3); }
+  70%  { transform: scale(0.9); }
+  100% { transform: scale(1); }
+}
+
+/* ── SECTION LABEL UNDERLINE WIPE ── */
+.section-divider {
+  transform-origin: left;
+  animation: none;
+}
+.section-divider.wipe {
+  animation: dividerWipe 0.5s ease forwards;
+}
+@keyframes dividerWipe {
+  from { transform: scaleX(0); }
+  to   { transform: scaleX(1); }
+}
+
+/* ── FOOTER LINK HOVER ── */
+.footer-info a { transition: opacity 0.2s; }
+.footer-info a:hover { opacity: 0.75; text-decoration: underline; }
+
+/* ── NAV ACTIVE UNDERLINE SLIDE ── */
+nav a { position: relative; }
+nav a::after {
+  content: '';
+  position: absolute;
+  bottom: -2px; left: 0;
+  width: 0; height: 2px;
+  background: #E53935;
+  transition: width 0.25s ease;
+}
+nav a:hover::after { width: 100%; }
+
+/* ── FOUNDER CARDS ── */
+.founder-section { background: #f7faf8; padding: 60px 0 48px; border-top: 1px solid #d8e8da; }
+.founder-card {
+  background: #fff;
+  border-radius: 18px;
+  overflow: hidden;
+  box-shadow: 0 4px 18px rgba(20,80,40,0.08);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  opacity: 0;
+  transform: translateY(36px);
+}
+.founder-card.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+.founder-card:hover {
+  transform: translateY(-8px) scale(1.02);
+  box-shadow: 0 16px 40px rgba(20,80,40,0.15);
+}
+.founder-photo {
+  width: 100%;
+  height: 260px;
+  object-fit: cover;
+  object-position: top;
+  display: block;
+  transition: transform 0.5s ease;
+}
+.founder-card:hover .founder-photo {
+  transform: scale(1.05);
+}
+.founder-photo-wrap {
+  overflow: hidden;
+  border-radius: 14px 14px 0 0;
+}
+.founder-info { padding: 18px 20px 22px; }
+.founder-role-badge {
+  display: inline-block;
+  background: #e6f9ef;
+  color: #1a7a3c;
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  padding: 3px 10px;
+  border-radius: 20px;
+  border: 1px solid #a8dfc0;
+  margin-bottom: 10px;
+}
+.founder-name {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #142b18;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.founder-name a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px; height: 24px;
+  background: #0077b5;
+  border-radius: 50%;
+  transition: transform 0.2s, background 0.2s;
+}
+.founder-name a:hover { background: #005f91; transform: scale(1.15); }
+.founder-name a svg { width: 13px; height: 13px; fill: #fff; }
+.founder-detail {
+  font-size: 0.8rem;
+  color: #3a5a3e;
+  display: flex;
+  align-items: flex-start;
+  gap: 7px;
+  margin-bottom: 5px;
+  line-height: 1.4;
+}
+.founder-detail::before {
+  content: '▷';
+  color: #E53935;
+  font-size: 0.65rem;
+  margin-top: 2px;
+  flex-shrink: 0;
+}
+
+/* transition delays for founder cards */
+.founder-card-delay-1 { transition: opacity 0.6s ease 0.1s, transform 0.6s ease 0.1s, box-shadow 0.3s ease, filter 0.5s ease; }
+.founder-card-delay-2 { transition: opacity 0.6s ease 0.25s, transform 0.6s ease 0.25s, box-shadow 0.3s ease, filter 0.5s ease; }
+.founder-card-delay-3 { transition: opacity 0.6s ease 0.4s, transform 0.6s ease 0.4s, box-shadow 0.3s ease, filter 0.5s ease; }
+
+/* ── COFFEE / CAFETERIA SECTION ANIMATIONS ── */
+.card-bg3 {
+  position: relative;
+  overflow: hidden;
+}
+@keyframes bgZoom {
+  0%   { transform: scale(1); }
+  50%  { transform: scale(1.04); }
+  100% { transform: scale(1); }
+}
+.card-bg3::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: url("/static/logo2.jpeg");
+  background-size: cover;
+  background-position: center;
+  animation: bgZoom 8s ease-in-out infinite;
+  z-index: 0;
+}
+.card-bg3 > * { position: relative; z-index: 1; }
+
+@keyframes coffeeFloat {
+  0%, 100% { transform: translateY(0px); }
+  50%       { transform: translateY(-8px); }
+}
+.card-bg3 .hero-badge {
+  animation: heroSlideIn 0.6s ease both, coffeeFloat 4s ease-in-out 1s infinite;
+}
+@keyframes steamRise {
+  0%   { opacity: 0; transform: translateY(0) scaleX(1); }
+  50%  { opacity: 1; transform: translateY(-12px) scaleX(1.1); }
+  100% { opacity: 0; transform: translateY(-24px) scaleX(0.8); }
+}
+.cafe-steam {
+  display: inline-block;
+  animation: steamRise 2s ease-in-out infinite;
+  margin-right: 4px;
+}
+</style>
+</head>
+<body>
+
+<div class="announcement-bar">
+  🌱 &nbsp; India's clean mobility starts here — explore verified EV charging points near you
+</div>
+
+<header>
+  <div class="logo-wrap">
+    <img src="{{ url_for('static', filename='logo2.png') }}" alt="Logo" class="logo-icon">
+    
+  </div>
+  <nav>
+    <a href="{{ url_for('home') }}">Home</a>
+    <a href="{{ url_for('stations') }}">Stations</a>
+    <a href="{{ url_for('about') }}">About</a>
+  </nav>
+</header>
+
+<div class="card-bg2">
+  <div class="hero-content">
+    <div class="hero-badge">⚡ EV Charging Station</div>
+    <h1><span style="font-family: 'Lastica', sans-serif; color:#E53935">MACH EV </span>Charging Stations</h1>
+    <p>Redefine your charging experience—fast EV charging paired with a premium café space, giving you the perfect place to relax while your vehicle powers up.</p>
+    <a href="{{ url_for('stations') }}" class="hero-btn">Explore Stations &rarr;</a>
+  </div>
+</div>
+
+<div class="section-wrap">
+  <p class="section-label reveal">Beyond Charging</p>
+  <h2 class="section-title reveal">Why We Different</h2>
+  <div class="section-divider reveal"></div>
+  <div class="container">
+    <div class="row justify-content-center g-4">
+      <div class="col-6 col-sm-6 col-md-4 col-lg-3 reveal reveal-delay-1">
+        <div class="card text-center p-3">
+          <div class="step-num">1</div>
+          <img src="{{ url_for('static', filename='img3.jpeg') }}" class="img-style">
+          <div class="card-body">Precise Supply</div>
+        </div>
+      </div>
+      <div class="col-6 col-sm-6 col-md-4 col-lg-3 reveal reveal-delay-2">
+        <div class="card text-center p-3">
+          <div class="step-num">2</div>
+          <img src="{{ url_for('static', filename='img1.jpeg') }}">
+          <div class="card-body">Human Assistance</div>
+        </div>
+      </div>
+      <div class="col-6 col-sm-6 col-md-4 col-lg-3 reveal reveal-delay-3">
+        <div class="card text-center p-3">
+          <div class="step-num">3</div>
+          <img src="{{ url_for('static', filename='img4.png') }}">
+          <div class="card-body">Future Ready Platform </div>
+        </div>
+      </div>
+      <div class="col-6 col-sm-6 col-md-4 col-lg-3 reveal reveal-delay-4">
+        <div class="card text-center p-3">
+          <div class="step-num">4</div>
+          <img src="{{ url_for('static', filename='img2.jpeg') }}">
+          <div class="card-body">Top-Tier Technology</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<div class="bg-tint">
+  <div class="section-wrap">
+    <p class="section-label reveal">What We Offer</p>
+    <h2 class="section-title reveal">Key Features</h2>
+    <div class="section-divider reveal"></div>
+    <div class="container">
+      <div class="row justify-content-center g-4">
+        <div class="col-6 col-sm-6 col-md-4 col-lg-3 reveal reveal-delay-1">
+          <div class="card text-center p-3">
+            <div class="feature-pill">Cafe</div>
+            <img src="{{ url_for('static', filename='i1.jpeg') }}">
+            <div class="card-body">Cafeteria</div>
+          </div>
+        </div>
+        <div class="col-6 col-sm-6 col-md-4 col-lg-3 reveal reveal-delay-2">
+          <div class="card text-center p-3">
+            <div class="feature-pill">Space</div>
+            <img src="{{ url_for('static', filename='i2.jpeg') }}">
+            <div class="card-body">Parking Space</div>
+          </div>
+        </div>
+        <div class="col-6 col-sm-6 col-md-4 col-lg-3 reveal reveal-delay-3">
+          <div class="card text-center p-3">
+            <div class="feature-pill">connection</div>
+            <img src="{{ url_for('static', filename='i3.jpeg') }}">
+            <div class="card-body">Wi-Fi Availability</div>
+          </div>
+        </div>
+        <div class="col-6 col-sm-6 col-md-4 col-lg-3 reveal reveal-delay-4">
+          <div class="card text-center p-3">
+            <div class="feature-pill">Hygiene</div>
+            <img src="{{ url_for('static', filename='i4.jpeg') }}">
+            <div class="card-body"> Restrooms </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<div class="card-bg3">
+  <div class="hero-content">
+    <div class="hero-badge"><span class="cafe-steam">☕</span> Refreshing Cafeteria</div>
+    <h1>More than a <span style="color:#E53935">Charging</span> Experience</h1>
+    <p>Experience a refined break at our in-station cafeteria—crafted for comfort, quality, and a seamless blend of relaxation, efficiency, and high-speed Wi-Fi connectivity</p>
+    <a href="https://machcafe.machev.in" target="_blank" class="hero-btn">Visit Cafe &rarr;</a>
+  </div>
+</div>
+
+<div class="container">
+  <div class="row justify-content-center">
+    <div class="col-md-3 col-8 my-5">
+      <a href="{{ url_for('stations') }}">
+        <button class="btn-view">Explore Our Network</button>
+      </a>
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+<div class="section-wrap" style="padding-bottom:48px;">
+  <p class="section-label reveal">Built on Quality</p>
+  <h2 class="section-title reveal">Exclusively for You</h2>
+  <div class="section-divider reveal"></div>
+  <div class="container-fluid">
+    <div class="row justify-content-center g-4 scroll-row">
+      <div class="col-6 col-sm-6 col-md-4 col-lg-3 scroll-card">
+        <div class="card text-center p-3" style="height:100%">
+          <img src="{{ url_for('static', filename='fast.jpeg') }}">
+          <div class="card-body">Fast Charging</div>
+        </div>
+      </div>
+      <div class="col-6 col-sm-6 col-md-4 col-lg-3 scroll-card">
+        <div class="card text-center p-3" style="height:100%">
+          <img src="{{ url_for('static', filename='accuracy.jpeg') }}">
+          <div class="card-body">Realtime Accuracy</div>
+        </div>
+      </div>
+      <div class="col-6 col-sm-6 col-md-4 col-lg-3 scroll-card">
+        <div class="card text-center p-3" style="height:100%">
+          <img src="{{ url_for('static', filename='com.jpeg') }}">
+          <div class="card-body">Comfort-First Experience</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ── FOUNDERS SECTION ── -->
+<div class="founder-section">
+  <div class="container">
+    <p class="section-label reveal">The Team</p>
+    <h2 class="section-title reveal">Meet Our Founders</h2>
+    <div class="section-divider reveal"></div>
+    <div class="row justify-content-center g-4">
+
+      <!-- Founder 1 -->
+      <div class="col-12 col-sm-6 col-lg-4">
+        <div class="founder-card founder-card-delay-1">
+          <div class="founder-photo-wrap">
+            <img src="{{ url_for('static', filename='founder1.jpeg') }}" alt="Pradeep Kodali" class="founder-photo">
+          </div>
+          <div class="founder-info">
+            <span class="founder-role-badge">Founder</span>
+            <div class="founder-name">
+               Dr.L.Prabhu 
+              <!--<a href="#" aria-label="LinkedIn">
+                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+              </a>-->
+            </div>
+            <div class="founder-detail">12 years product mfg. experience</div>
+            <div class="founder-detail">B.E. BITS Pilani, MBA IIM-A, MS Umich</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Founder 2 -->
+      <div class="col-12 col-sm-6 col-lg-4">
+        <div class="founder-card founder-card-delay-2">
+          <div class="founder-photo-wrap">
+            <img src="{{ url_for('static', filename='founder2.jpeg') }}" alt="Raja Sekhar Upputuri" class="founder-photo">
+          </div>
+          <div class="founder-info">
+            <span class="founder-role-badge">Founder</span>
+            <div class="founder-name">
+              Founder2
+              <!--<a href="#" aria-label="LinkedIn">
+                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+              </a>-->
+            </div>
+            <div class="founder-detail">13 years mfg. &amp; entrepreneurial experience</div>
+            <div class="founder-detail">B.E. BITS Pilani, MBA CEIBS &amp; LBS</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Founder 3 -->
+      <div class="col-12 col-sm-6 col-lg-4">
+        <div class="founder-card founder-card-delay-3">
+          <div class="founder-photo-wrap">
+            <img src="{{ url_for('static', filename='founder3.jpeg') }}" alt="Ravi Shankar Kolli" class="founder-photo">
+          </div>
+          <div class="founder-info">
+            <span class="founder-role-badge">Founder</span>
+            <div class="founder-name">
+              Founder3
+              <!---->
+              <!--<a href="#" aria-label="LinkedIn">
+                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+              </a>-->
+            </div>
+            <div class="founder-detail">14 years of software dev. experience</div>
+            <div class="founder-detail">B.E. Osmania, MS Univ of Texas, Austin</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+
+<div class="card-bg">
+  <div class="cta-content text-center">
+    <h3>Start Exploring <span style="font-family:'Lastica',sans-serif;">MACH</span> EV Charging Stations Today!!</h3>
+    <p>Charge clean, drive green, and unwind at our café.</p>
+    <a href="{{ url_for('stations') }}" class="hero-btn">Find a Station &rarr;</a>
+  </div>
+</div>
+
+
+<footer>
+  <span class="footer-brand"><span style="font-family:'Lastica',sans-serif;">MACH</span> Charging Redefined</span>
+  <div class="footer-info">
+    EV Station Locator &nbsp;|&nbsp; Made by 3D &nbsp;&nbsp;
+    <a href="mailto:indumathi3637@gmail.com">indumathi3637@gmail.com</a>
+  </div>
+</footer>
+
+
+
+
+
+
+
+
+
+<script>
+  const scrollContainer = document.querySelector('.scroll-row');
+  const cards = document.querySelectorAll('.scroll-card');
+  if (scrollContainer && cards.length > 0) {
+    let currentIndex = 0;
+    setInterval(() => {
+      currentIndex++;
+      if (currentIndex >= cards.length) currentIndex = 0;
+      scrollContainer.scrollTo({ left: cards[currentIndex].offsetLeft, behavior: 'smooth' });
+    }, 2000);
+  }
+</script>
+
+<script>
+  // ── SCROLL REVEAL ──
+  const revealObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+        // Trigger divider wipe animation
+        if (entry.target.classList.contains('section-divider')) {
+          entry.target.classList.add('wipe');
+        }
+        revealObserver.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.15 });
+
+  document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
+
+  // ── FOUNDER CARDS REVEAL ──
+  const founderObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+        founderObserver.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.15 });
+  document.querySelectorAll('.founder-card').forEach(el => founderObserver.observe(el));
+</script>
+
+</body>
+</html>

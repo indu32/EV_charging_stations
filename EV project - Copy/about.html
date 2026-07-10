@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>About — MACH</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.cdnfonts.com/css/lastica" rel="stylesheet">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<style>
+*, *::before, *::after { box-sizing: border-box; }
+body { background-color: #f0f4f1; font-family: 'Poppins', sans-serif; margin: 0; color: #1c2e1e; min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 40px 16px; }
+.brand-lastica { font-family: 'Lastica', 'Poppins', sans-serif; font-weight: 700; color: #E53935; letter-spacing: 1px; }
+.about-wrapper { display: flex; align-items: stretch; gap: 24px; max-width: 1100px; width: 100%; }
+.about-img-card { flex: 0 0 340px; background: #fff; border-radius: 20px; border-top: 4px solid #E53935; box-shadow: 0 8px 40px rgba(20,100,40,0.08); display: flex; flex-direction: column; align-items: center; justify-content: flex-start; padding: 30px; gap: 24px; }
+.about-img-card img { width: 100%; object-fit: contain; }
+.sidebar-badge { width: 100%; background: linear-gradient(135deg, #E53935 0%, #b71c1c 100%); border-radius: 14px; padding: 20px 16px; text-align: center; color: #fff; }
+.sidebar-badge .badge-icon { font-size: 2rem; margin-bottom: 8px; }
+.sidebar-badge .badge-title { font-size: 0.85rem; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 4px; }
+.sidebar-badge .badge-desc { font-size: 0.72rem; color: rgba(255,255,255,0.82); line-height: 1.5; }
+.sidebar-trust { width: 100%; }
+.sidebar-trust .trust-title { font-size: 0.68rem; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: #5a7a5e; margin-bottom: 10px; }
+.trust-item { display: flex; align-items: center; gap: 10px; padding: 8px 0; border-bottom: 1px solid #edf2ee; }
+.trust-item:last-child { border-bottom: none; }
+.trust-dot { width: 8px; height: 8px; border-radius: 50%; background: #E53935; flex-shrink: 0; }
+.trust-item span { font-size: 0.75rem; color: #4a5e4c; font-weight: 500; }
+.about-card { flex: 1; background: #fff; border-radius: 20px; border-top: 4px solid #E53935; padding: 44px 48px 40px; box-shadow: 0 8px 40px rgba(20,100,40,0.08); }
+.mission-label { font-size: 0.72rem; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: #5a7a5e; margin-bottom: 6px; }
+.about-card h1 { font-size: 1.6rem; font-weight: 700; color: #142b18; margin-bottom: 20px; }
+.about-card h2 { font-size: 1.2rem; font-weight: 700; color: #142b18; margin-bottom: 12px; }
+.about-card p { font-size: 0.88rem; color: #4a5e4c; line-height: 1.75; margin-bottom: 14px; }
+.stats-row { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 28px; margin-bottom: 32px; }
+.stat-box { flex: 1 1 80px; background: #f7faf7; border: 1px solid #dceade; border-radius: 12px; padding: 14px 10px; text-align: center; min-width: 80px; }
+.stat-box .stat-num { font-size: 1.15rem; font-weight: 700; color: #E53935; display: block; margin-bottom: 4px; }
+.stat-box .stat-label { font-size: 0.7rem; color: #5a7a5e; font-weight: 500; line-height: 1.3; }
+.section-divider { border: none; border-top: 1px solid #e0eae1; margin: 28px 0; }
+.how-label { font-size: 0.72rem; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: #E53935; margin-bottom: 8px; }
+.steps-grid { display: flex; flex-direction: column; gap: 14px; margin-bottom: 28px; }
+.step-item { display: flex; align-items: flex-start; gap: 14px; }
+.step-num { flex-shrink: 0; width: 30px; height: 30px; border-radius: 50%; background: #E53935; color: #fff; font-size: 0.78rem; font-weight: 700; display: flex; align-items: center; justify-content: center; margin-top: 2px; }
+.step-content .step-title { font-size: 0.88rem; font-weight: 700; color: #142b18; margin-bottom: 3px; }
+.step-content .step-desc { font-size: 0.8rem; color: #5a7a5e; line-height: 1.6; }
+.features-label { font-size: 0.72rem; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: #5a7a5e; margin-bottom: 10px; }
+.features-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 28px; }
+.feature-card { background: #f7faf7; border: 1px solid #dceade; border-radius: 12px; padding: 14px 16px; }
+.feature-card .feature-icon { font-size: 1.2rem; margin-bottom: 6px; }
+.feature-card .feature-title { font-size: 0.8rem; font-weight: 700; color: #142b18; margin-bottom: 4px; }
+.feature-card .feature-desc { font-size: 0.73rem; color: #5a7a5e; line-height: 1.5; }
+.vision-banner { background: linear-gradient(135deg, #142b18 0%, #1e3d22 100%); border-radius: 14px; padding: 22px 24px; margin-bottom: 28px; position: relative; overflow: hidden; }
+.vision-banner::before { content: ''; position: absolute; right: -20px; top: -20px; width: 100px; height: 100px; background: rgba(229,57,53,0.15); border-radius: 50%; }
+.vision-banner::after { content: ''; position: absolute; right: 30px; bottom: -30px; width: 70px; height: 70px; background: rgba(229,57,53,0.1); border-radius: 50%; }
+.vision-banner .vision-tag { font-size: 0.65rem; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: #E53935; margin-bottom: 6px; }
+.vision-banner .vision-text { font-size: 0.9rem; font-weight: 600; color: #fff; line-height: 1.6; margin: 0; }
+.vision-banner .vision-sub { font-size: 0.75rem; color: rgba(255,255,255,0.6); margin-top: 6px; line-height: 1.5; }
+.cta-row { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+.btn-back { display: inline-block; background: #E53935; color: #fff; font-family: 'Poppins', sans-serif; font-size: 0.9rem; font-weight: 600; padding: 13px 30px; border-radius: 8px; text-decoration: none; transition: background 0.2s, transform 0.15s; }
+.btn-back:hover { background: #c62828; color: #fff; transform: translateY(-2px); }
+.cta-note { font-size: 0.75rem; color: #7a9a7e; }
+.cta-note strong { color: #E53935; }
+@media (max-width: 768px) {
+  body { padding: 24px 14px; align-items: flex-start; }
+  .about-wrapper { flex-direction: column; gap: 16px; }
+  .about-img-card { flex: 0 0 auto; width: 100%; padding: 20px; }
+  .about-img-card img { height: 180px; width: auto; max-width: 100%; }
+  .about-card { width: 100%; padding: 28px 24px; }
+  .about-card h1 { font-size: 1.35rem; }
+  .about-card h2 { font-size: 1.05rem; }
+  .features-grid { grid-template-columns: 1fr; }
+}
+@media (max-width: 480px) {
+  body { padding: 16px 10px; }
+  .about-img-card { padding: 16px; border-radius: 14px; }
+  .about-card { padding: 22px 16px; border-radius: 14px; }
+  .about-card h1 { font-size: 1.15rem; }
+  .about-card h2 { font-size: 0.95rem; }
+  .about-card p { font-size: 0.82rem; }
+  .stat-box { flex: 1 1 calc(33% - 10px); padding: 10px 6px; }
+  .stat-box .stat-num { font-size: 1rem; }
+  .stat-box .stat-label { font-size: 0.62rem; }
+  .btn-back { width: 100%; text-align: center; padding: 12px; }
+  .cta-row { flex-direction: column; align-items: stretch; }
+}
+
+@font-face {
+  font-family: 'Lastica';
+  src: url('/static/fonts/NobodyTalks-oZo4.ttf') format('truetype');
+}
+</style>
+</head>
+<body>
+
+<div class="about-wrapper">
+
+  <!-- Sidebar -->
+  <div class="about-img-card">
+    <img src="{{ url_for('static', filename='ev_about.png') }}" alt="EV Charging Station">
+    <div class="sidebar-badge">
+      <div class="badge-icon">⚡</div>
+      <div class="badge-title">Powered by Real Data</div>
+      <div class="badge-desc">Our station database is continuously updated to reflect real-world availability and charger status.</div>
+    </div>
+    <div class="sidebar-trust">
+      <div class="trust-title">Why Drivers Trust Us</div>
+      <div class="trust-item"><div class="trust-dot"></div><span>No installations of any app</span></div>
+      <div class="trust-item"><div class="trust-dot"></div><span>Manned Stations</span></div>
+      <div class="trust-item"><div class="trust-dot"></div><span>Roaming Support</span></div>
+      <div class="trust-item"><div class="trust-dot"></div><span>We deliver truly what we offer</span></div>
+      <div class="trust-item"><div class="trust-dot"></div><span>Zero Hold Payments</span></div>
+    </div>
+  </div>
+
+  <!-- Main Card -->
+  <div class="about-card">
+    <p class="mission-label">OUR MISSION</p>
+    <h1>About <span style="font-family: 'Lastica', sans-serif; color:#E53935">MACH EV </span> Charging Stations</h1>
+
+    <p><span style="font-family: 'Lastica', sans-serif; color:#E53935">MACH EV </span> Charging is built to redefine the electric vehicle charging experience with speed, reliability, and convenience at its core. Our stations are designed to be more than just charging points — they are smart hubs that enhance every journey. With real-time station availability, seamless navigation, and zero wallet dependency, we ensure a hassle-free experience for every user.</p>
+    <p>We focus on accessibility by placing stations at strategic locations, complemented with essential amenities like cafeterias, restrooms, and Wi-Fi. Safety, transparency, and user control are at the heart of our system, giving you complete confidence every time you charge.</p>
+    <p>At <span style="font-family: 'Lastica', sans-serif; color:#E53935">MACH EV </span>, we are not just supporting the shift to electric mobility — we are accelerating it with smarter, user-first solutions.</p>
+
+    <hr class="section-divider">
+
+    <p class="how-label">How It Works</p>
+    <div class="steps-grid">
+      <div class="step-item">
+        <div class="step-num">1</div>
+        <div class="step-content">
+          <div class="step-title">Drive into a <span style="font-family: 'Lastica', sans-serif; color:#E53935">MACH EV </span> station</div>
+          <div class="step-desc">Visit any <span class="brand-lastica">MACH</span> charging station designed for easy access and convenience.</div>
+        </div>
+      </div>
+      <div class="step-item">
+        <div class="step-num">2</div>
+        <div class="step-content">
+          <div class="step-title">Get On-Site Assistance</div>
+          <div class="step-desc">Our staff is always present to guide and support you through the process.</div>
+        </div>
+      </div>
+      <div class="step-item">
+        <div class="step-num">3</div>
+        <div class="step-content">
+          <div class="step-title">Relax While Charging</div>
+          <div class="step-desc">Enjoy amenities like cafeteria, restrooms, and Wi-Fi during your wait.</div>
+        </div>
+      </div>
+      <div class="step-item">
+        <div class="step-num">4</div>
+        <div class="step-content">
+          <div class="step-title">Charge &amp; Continue Your Journey</div>
+          <div class="step-desc">Once done, unplug and get back on the road with ease.</div>
+        </div>
+      </div>
+    </div>
+
+    <hr class="section-divider">
+
+    <p class="features-label">Platform Features</p>
+    <div class="features-grid">
+      <div class="feature-card">
+        <div class="feature-title">Assured Experience</div>
+        <div class="feature-desc">We consistently deliver what we promise.</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-title">Real-Time Monitoring</div>
+        <div class="feature-desc">Uses your device's GPS to pinpoint your position and surface the closest chargers instantly.</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-title">No App Required</div>
+        <div class="feature-desc">Start charging instantly without installing any application.</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-title">Manned Stations</div>
+        <div class="feature-desc">Staff always on-site to assist you at every step.</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-title">Roaming Support</div>
+        <div class="feature-desc">Already using an EV app? You can continue with it seamlessly at <span style="font-family: 'Lastica', sans-serif; color:#E53935">MACH EV </span> stations.</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-title">Pause &amp; Refresh</div>
+        <div class="feature-desc">Enjoy freshly prepared food and beverages while your vehicle charges. A comfortable space designed to make your waiting time relaxing.</div>
+      </div>
+    </div>
+
+    <div class="vision-banner">
+      <div class="vision-tag">Our Vision</div>
+      <p class="vision-text">"A future where every EV driver reaches their destination with confidence — because the right charger is always just a search away."</p>
+      <p class="vision-sub">We're building towards a cleaner, smarter grid — one charging station at a time.</p>
+    </div>
+
+    <div class="cta-row">
+      <a href="{{ url_for('home') }}" class="btn-back">← Back to Home</a>
+      <p class="cta-note" style="margin:0;">Serving EV drivers across <strong>10+ cities</strong> and growing.</p>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>

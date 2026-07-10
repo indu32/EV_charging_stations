@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Charging Invoice Modal — MACH EV</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.cdnfonts.com/css/lastica" rel="stylesheet">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<style>
+
+@font-face {
+  font-family: 'Lastica';
+  src: url('/static/fonts/NobodyTalks-oZo4.ttf') format('truetype');
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+body { background: #ffffff; font-family: 'Poppins', sans-serif; margin: 0; color: #111111; min-height: 100vh; }
+.brand-lastica { font-family: 'Lastica', 'Poppins', sans-serif; font-weight: 700; color: #E53935; letter-spacing: 1px; }
+
+/* ── Demo trigger area ── */
+.demo-area { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; gap: 16px; padding: 20px; }
+.demo-title { font-size: 1.3rem; font-weight: 700; color: #E53935; }
+.demo-sub { font-size: 0.82rem; color: #666666; }
+.btn-simulate { background: linear-gradient(135deg, #E53935, #c62828); color: #fff; border: none; border-radius: 10px; font-family: 'Poppins', sans-serif; font-size: 0.95rem; font-weight: 700; padding: 14px 40px; cursor: pointer; box-shadow: 0 4px 20px rgba(229,57,53,0.35); transition: transform 0.2s, box-shadow 0.2s; }
+.btn-simulate:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(229,57,53,0.5); }
+.session-card { background: #f8f8f8; border-radius: 14px; padding: 24px 28px; width: 100%; max-width: 420px; border: 1px solid #e0e0e0; }
+.session-card h3 { font-size: 0.85rem; font-weight: 700; color: #E53935; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
+.session-row { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid #eeeeee; font-size: 0.82rem; }
+.session-row:last-child { border-bottom: none; }
+.session-label { color: #666666; }
+.session-val { font-weight: 600; color: #111111; }
+.live-dot { width: 8px; height: 8px; background: #E53935; border-radius: 50%; display: inline-block; animation: pulse 1.2s infinite; margin-right: 6px; }
+@keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.4;transform:scale(1.3)} }
+
+/* ── Modal Overlay ── */
+.modal-overlay {
+  display: none;
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.75);
+  backdrop-filter: blur(6px);
+  z-index: 1000;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  animation: fadeIn 0.3s ease;
+}
+.modal-overlay.active { display: flex; }
+@keyframes fadeIn { from{opacity:0} to{opacity:1} }
+
+/* ── Invoice Modal Card ── */
+.invoice-modal {
+  background: #ffffff;
+  border-radius: 20px;
+  width: 100%;
+  max-width: 580px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 24px 80px rgba(0,0,0,0.15), 0 0 0 1px #e0e0e0;
+  animation: slideUp 0.35s cubic-bezier(0.34,1.56,0.64,1);
+  scrollbar-width: thin;
+  scrollbar-color: #cccccc transparent;
+}
+@keyframes slideUp { from{opacity:0;transform:translateY(40px)} to{opacity:1;transform:translateY(0)} }
+
+/* ── Modal Header ── */
+.modal-header-bar {
+  background: linear-gradient(135deg, #1a0000, #2d0000);
+  padding: 24px 28px 20px;
+  border-radius: 20px 20px 0 0;
+  position: relative;
+}
+.modal-close {
+  position: absolute; top: 16px; right: 18px;
+  background: rgba(255,255,255,0.08); border: none; color: #fff;
+  width: 32px; height: 32px; border-radius: 50%; font-size: 1rem;
+  cursor: pointer; display: flex; align-items: center; justify-content: center;
+  transition: background 0.2s;
+}
+.modal-close:hover { background: rgba(229,57,53,0.3); }
+.modal-inv-brand { font-size: 1.3rem; color: #fff; margin-bottom: 2px; }
+.modal-inv-sub { font-size: 0.72rem; color: rgba(255,255,255,0.45); }
+.modal-inv-number { font-size: 0.95rem; font-weight: 700; color: #E53935; letter-spacing: 1px; margin-top: 10px; }
+.modal-inv-date { font-size: 0.72rem; color: rgba(255,255,255,0.5); margin-top: 2px; }
+.ocpp-badge { display: inline-flex; align-items: center; gap: 4px; background: rgba(229,57,53,0.15); color: #E53935; font-size: 0.62rem; font-weight: 700; letter-spacing: 1px; padding: 3px 10px; border-radius: 20px; text-transform: uppercase; border: 1px solid rgba(229,57,53,0.25); margin-top: 8px; }
+
+/* ── Modal Body ── */
+.modal-body { padding: 24px 28px; }
+
+/* Info Grid */
+.info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px; }
+.info-box { background: #f8f8f8; border: 1px solid #e0e0e0; border-radius: 10px; padding: 12px 14px; }
+.info-label { font-size: 0.62rem; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: #666666; margin-bottom: 5px; }
+.info-val { font-size: 0.84rem; font-weight: 600; color: #111111; }
+.info-sub { font-size: 0.72rem; color: #666666; margin-top: 2px; }
+
+/* Meter Boxes */
+.meter-row { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 20px; }
+.meter-box { flex: 1; min-width: 90px; background: linear-gradient(135deg, #E53935, #c62828); border-radius: 12px; padding: 14px 12px; text-align: center; color: #fff; }
+.meter-box.green { background: linear-gradient(135deg, #1a0000, #2d0000); border: 1px solid #4d0000; }
+.meter-val { font-size: 1.3rem; font-weight: 700; display: block; }
+.meter-unit { font-size: 0.62rem; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; opacity: 0.8; }
+.meter-label { font-size: 0.65rem; color: rgba(255,255,255,0.65); margin-top: 3px; }
+
+/* Table */
+.inv-table { width: 100%; border-collapse: collapse; font-size: 0.82rem; margin-bottom: 16px; }
+.inv-table thead th { background: #f4f4f4; color: #666666; font-size: 0.68rem; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; padding: 9px 12px; border-bottom: 1px solid #eeeeee; text-align: left; }
+.inv-table thead th:last-child { text-align: right; }
+.inv-table tbody td { padding: 11px 12px; border-bottom: 1px solid #eeeeee; color: #444444; }
+.inv-table tbody td:last-child { text-align: right; font-weight: 600; color: #111111; }
+.inv-table tfoot td { padding: 9px 12px; font-weight: 700; }
+.subtotal-row td { border-top: 1px solid #e0e0e0; color: #444444; }
+.tax-row td { color: #444444; }
+.total-row td { background: linear-gradient(135deg, #1a0000, #2d0000); color: #fff; font-size: 0.95rem; border-radius: 0 0 8px 8px; }
+.total-row td:last-child { color: #E53935; font-size: 1.05rem; }
+
+
+
+/* Modal Footer */
+.modal-footer-bar { border-top: 1px solid #e0e0e0; padding: 16px 28px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; background: #f8f8f8; border-radius: 0 0 20px 20px; }
+.footer-note { font-size: 0.68rem; color: #666666; }
+.btn-print { background: #f4f4f4; color: #111111; border: 1px solid #dddddd; border-radius: 7px; font-family: 'Poppins', sans-serif; font-size: 0.8rem; font-weight: 600; padding: 8px 20px; cursor: pointer; transition: background 0.2s; }
+.btn-print:hover { background: #e8e8e8; }
+.btn-close-modal { background: linear-gradient(135deg, #E53935, #c62828); color: #fff; border: none; border-radius: 7px; font-family: 'Poppins', sans-serif; font-size: 0.8rem; font-weight: 600; padding: 8px 20px; cursor: pointer; transition: transform 0.2s; }
+.btn-close-modal:hover { transform: translateY(-1px); }
+
+/* Session ended banner */
+.session-ended-banner { background: linear-gradient(135deg, #1a0000, #2d0000); border: 1px solid #4d0000; border-radius: 10px; padding: 12px 16px; display: flex; align-items: center; gap: 10px; margin-bottom: 20px; }
+.ended-icon { font-size: 1.4rem; }
+.ended-text { font-size: 0.82rem; font-weight: 600; color: #E53935; }
+.ended-sub { font-size: 0.72rem; color: #666666; margin-top: 2px; }
+
+@media (max-width: 500px) {
+  .modal-body, .modal-header-bar { padding: 18px 16px; }
+  .info-grid { grid-template-columns: 1fr; }
+  .modal-footer-bar { flex-direction: column; text-align: center; padding: 14px 16px; }
+}
+@media print {
+  .modal-overlay { position: static; background: none; backdrop-filter: none; padding: 0; display: block !important; }
+  .invoice-modal { box-shadow: none; max-height: none; border-radius: 0; }
+  .modal-close, .btn-close-modal, .btn-print, .demo-area { display: none !important; }
+}
+</style>
+</head>
+<body>
+
+<!-- ── Demo Trigger Area ── -->
+<div class="demo-area">
+  <p class="demo-title">⚡ <span style="font-family:'Lastica',sans-serif;">MACH</span> EV — Invoice Modal Demo</p>
+  <p class="demo-sub">Invoice auto-appears when a charging session ends</p>
+
+  <!-- Simulated live session card -->
+  <div class="session-card">
+    <h3><span class="live-dot"></span> Live Charging Session</h3>
+    <div class="session-row">
+      <span class="session-label">Station</span>
+      <span class="session-val">MACH EV — Vijayawada</span>
+    </div>
+    <div class="session-row">
+      <span class="session-label">Vehicle / RFID</span>
+      <span class="session-val">AP39AB1234</span>
+    </div>
+    <div class="session-row">
+      <span class="session-label">Connector</span>
+      <span class="session-val">CCS2 DC</span>
+    </div>
+    <div class="session-row">
+      <span class="session-label">Energy</span>
+      <span class="session-val" id="liveEnergy">25.4 kWh</span>
+    </div>
+    <div class="session-row">
+      <span class="session-label">Duration</span>
+      <span class="session-val" id="liveDuration">45 min</span>
+    </div>
+    <div class="session-row" style="border:none;">
+      <span class="session-label">Cost so far</span>
+      <span class="session-val" style="color:#E53935;">₹ 356.45</span>
+    </div>
+  </div>
+
+  <!-- Simulate session end button -->
+  <button class="btn-simulate" onclick="triggerDemoInvoice()">
+    🔌 Simulate Session End → Show Invoice
+  </button>
+  <p class="demo-sub" style="margin-top:0;">In production this triggers automatically when charger sends TransactionEvent:Ended</p>
+</div>
+
+<!-- ── Invoice Modal ── -->
+<div class="modal-overlay" id="invoiceModal">
+  <div class="invoice-modal">
+
+    <!-- Header -->
+    <div class="modal-header-bar">
+      <button class="modal-close" onclick="closeModal()">✕</button>
+      <div class="modal-inv-brand">⚡ <span style="font-family:'Lastica',sans-serif;">MACH</span> EV</div>
+      <div class="modal-inv-sub">Charging Invoice — OCPP 2.0.1 Compliant</div>
+      <div class="modal-inv-number" id="invNumber">INV-—</div>
+      <div class="modal-inv-date" id="invDate">—</div>
+      <div><span class="ocpp-badge">✓ OCPP 2.0.1</span></div>
+    </div>
+
+    <!-- Body -->
+    <div class="modal-body">
+
+      <!-- Session ended banner -->
+      <div class="session-ended-banner">
+        <div class="ended-icon">✅</div>
+        <div>
+          <div class="ended-text">Charging Session Completed</div>
+          <div class="ended-sub">Your vehicle has been disconnected. Invoice generated automatically.</div>
+        </div>
+      </div>
+
+      <!-- Info Grid -->
+      <div class="info-grid">
+        <div class="info-box">
+          <div class="info-label">Station</div>
+          <div class="info-val" id="outStation">—</div>
+          <div class="info-sub" id="outStationId">—</div>
+        </div>
+        <div class="info-box">
+          <div class="info-label">Vehicle / RFID</div>
+          <div class="info-val" id="outVehicle">—</div>
+          <div class="info-sub" id="outConnector">—</div>
+        </div>
+        <div class="info-box">
+          <div class="info-label">Session ID</div>
+          <div class="info-val" id="outSessionId" style="font-size:0.72rem;word-break:break-all;">—</div>
+        </div>
+        <div class="info-box">
+          <div class="info-label">Tariff ID</div>
+          <div class="info-val" id="outTariffId">—</div>
+          <div class="info-sub">Currency: INR (₹)</div>
+        </div>
+      </div>
+
+      <!-- Meter Readings -->
+      <div class="meter-row">
+        <div class="meter-box">
+          <span class="meter-val" id="mEnergy">—</span>
+          <span class="meter-unit">kWh</span>
+          <div class="meter-label">Energy Consumed</div>
+        </div>
+        <div class="meter-box">
+          <span class="meter-val" id="mDuration">—</span>
+          <span class="meter-unit">min</span>
+          <div class="meter-label">Session Duration</div>
+        </div>
+        <div class="meter-box">
+          <span class="meter-val" id="mPower">—</span>
+          <span class="meter-unit">kW</span>
+          <div class="meter-label">Avg. Power</div>
+        </div>
+        <div class="meter-box green">
+          <span class="meter-val" id="mTotal">—</span>
+          <span class="meter-unit">INR</span>
+          <div class="meter-label">Total Payable</div>
+        </div>
+      </div>
+
+      <!-- Billing Table -->
+      <table class="inv-table">
+        <thead>
+          <tr>
+            <th>Description</th>
+            <th>Qty / Rate</th>
+            <th>Amount (₹)</th>
+          </tr>
+        </thead>
+        <tbody id="lineItems"></tbody>
+        <tfoot>
+          <tr class="subtotal-row">
+            <td colspan="2">Subtotal</td>
+            <td id="outSubtotal">—</td>
+          </tr>
+          <tr class="tax-row">
+            <td colspan="2" id="outTaxLabel">GST (18%)</td>
+            <td id="outTax">—</td>
+          </tr>
+          <tr class="total-row">
+            <td colspan="2">Total Payable</td>
+            <td id="outTotal">—</td>
+          </tr>
+        </tfoot>
+      </table>
+
+
+
+    </div>
+
+    <!-- Footer -->
+    <div class="modal-footer-bar">
+      <div class="footer-note">
+        ⚡ <span style="font-family:'Lastica',sans-serif;">MACH</span> EV · Thank you for choosing clean mobility.<br>
+        <span style="font-size:0.65rem;">GST Reg: 37AAACL1234A1ZQ · OCPP 2.0.1 metered values</span>
+      </div>
+      <div style="display:flex;gap:8px;">
+        <button class="btn-print" onclick="window.print()">🖨️ Print</button>
+        <button class="btn-close-modal" onclick="closeModal()">Close</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+// ── Simulate session end (replace this with your real OCPP TransactionEvent:Ended handler) ──
+// Connect to UI WebSocket — listens for real charger events
+const uiSocket = new WebSocket('ws://127.0.0.1:9000/ui');
+
+uiSocket.onmessage = async function(event) {
+    const msg = JSON.parse(event.data);
+
+    // Auto-trigger invoice when session ends
+    if (msg.event === 'invoice_trigger') {
+        try {
+            const res = await fetch('/api/invoice/generate', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    station_id:     msg.station_id,
+                    station_name:   msg.station_name,
+                    connector_type: 'CCS2 DC',
+                    vehicle_id:     msg.vehicle_id,   // ← RFID from charger
+                    energy_kwh:     msg.energy_kwh,   // ← from meter readings
+                    duration_min:   msg.duration_min, // ← from meter readings
+                    power_kw:       msg.power_kw,     // ← from meter readings
+                })
+            });
+            const data = await res.json();
+            showInvoiceModal(data);  // ← auto pops up!
+        } catch(err) {
+            console.error('Invoice error:', err);
+        }
+    }
+};
+
+uiSocket.onerror = function() {
+    console.warn('UI WebSocket not connected — running in demo mode');
+};
+
+// ── Render invoice into modal and show it ──
+function showInvoiceModal(data) {
+  const inv = data.invoice;
+
+  document.getElementById('invNumber').textContent   = data.invoice_number;
+  document.getElementById('invDate').textContent     = new Date(data.generated_at).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' });
+  document.getElementById('outStation').textContent  = data.station.name;
+  document.getElementById('outStationId').textContent= 'ID: ' + data.station.id;
+  document.getElementById('outVehicle').textContent  = data.vehicle_id || 'Guest';
+  document.getElementById('outConnector').textContent= 'Connector: ' + data.station.connector_type;
+  document.getElementById('outSessionId').textContent= data.session_id;
+  document.getElementById('outTariffId').textContent = inv.tariff_id;
+  document.getElementById('mEnergy').textContent     = inv.energy_kwh.toFixed(2);
+  document.getElementById('mDuration').textContent   = inv.duration_min.toFixed(0);
+  document.getElementById('mPower').textContent      = (data.ocpp_transaction?.payload?.meterValue?.[0]?.sampledValue?.[1]?.value || 0).toFixed(1);
+  document.getElementById('mTotal').textContent      = '₹' + inv.total.toFixed(2);
+
+  document.getElementById('lineItems').innerHTML = `
+    <tr>
+      <td>Energy Charge</td>
+      <td>${inv.energy_kwh.toFixed(2)} kWh × ₹${inv.price_per_kwh}/kWh</td>
+      <td>₹${inv.energy_cost.toFixed(2)}</td>
+    </tr>
+    <tr>
+      <td>Time / Session Charge</td>
+      <td>${inv.duration_min.toFixed(0)} min × ₹${inv.price_per_min}/min</td>
+      <td>₹${inv.time_cost.toFixed(2)}</td>
+    </tr>`;
+
+  document.getElementById('outSubtotal').textContent = '₹' + inv.subtotal.toFixed(2);
+  document.getElementById('outTaxLabel').textContent = `GST (${inv.tax_rate_pct}%)`;
+  document.getElementById('outTax').textContent      = '₹' + inv.tax.toFixed(2);
+  document.getElementById('outTotal').textContent    = '₹' + inv.total.toFixed(2);
+
+
+  // Show modal
+  document.getElementById('invoiceModal').classList.add('active');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeModal() {
+  document.getElementById('invoiceModal').classList.remove('active');
+  document.body.style.overflow = '';
+}
+
+// Close on overlay click
+document.getElementById('invoiceModal').addEventListener('click', function(e) {
+  if (e.target === this) closeModal();
+});
+
+// Close on Escape key
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') closeModal();
+});
+
+
+
+// ── Mock data (fallback when server not running) ──
+function getMockData() {
+  const sid = 'TXN-' + Math.random().toString(36).substr(2,8).toUpperCase();
+  const now = new Date().toISOString();
+  return {
+    invoice_number: 'INV-' + new Date().toISOString().slice(0,10).replace(/-/g,'') + '-' + sid.slice(-6),
+    session_id: sid,
+    generated_at: now,
+    station: { id: 'ST-MACH-VJW', name: 'MACH EV Charging Station - Vijayawada', connector_type: 'CCS2 DC' },
+    vehicle_id: 'AP39AB1234',
+    invoice: {
+      tariff_id: 'MACH-TARIFF-001',
+      currency: 'INR',
+      energy_kwh: 25.4,
+      price_per_kwh: 12.0,
+      energy_cost: 304.80,
+      duration_min: 45,
+      price_per_min: 0.5,
+      time_cost: 22.50,
+      subtotal: 327.30,
+      tax_rate_pct: 18,
+      tax: 58.91,
+      total: 386.21,
+      connector_type: 'CCS2 DC',
+    },
+    ocpp_transaction: {
+      messageTypeId: 2,
+      messageId: sid,
+      action: 'TransactionEvent',
+      payload: {
+        eventType: 'Ended',
+        timestamp: now,
+        triggerReason: 'EVDeparted',
+        transactionInfo: { transactionId: sid, chargingState: 'SuspendedEVSE', stoppedReason: 'EVDisconnected' },
+        evse: { id: 1, connectorId: 1 },
+        idToken: { idToken: 'AP39AB1234', type: 'Central' },
+        meterValue: [{ timestamp: now, sampledValue: [
+          { value: 25.4, measurand: 'Energy.Active.Import.Register' },
+          { value: 120,  measurand: 'Power.Active.Import' },
+          { value: 45,   measurand: 'Session.Duration' }
+        ]}]
+      }
+    }
+  };
+}
+
+async function triggerDemoInvoice() {
+    try {
+        const res = await fetch('/api/invoice/generate', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                station_id:     'ST-MACH-VJW',
+                station_name:   'MACH EV Charging Station - Vijayawada',
+                connector_type: 'CCS2 DC',
+                vehicle_id:     'AP39AB1234',
+                energy_kwh:     25.4,
+                duration_min:   45,
+                power_kw:       120,
+            })
+        });
+        const data = await res.json();
+        showInvoiceModal(data);
+    } catch(err) {
+        showInvoiceModal(getMockData());
+    }
+}
+/*
+  ── HOW TO INTEGRATE INTO YOUR REAL APP ──────────────────────────────────────
+
+  In your ocpp_ws_server.py, after handle_transaction_event processes "Ended",
+  broadcast the final data to your frontend via WebSocket UI listener:
+
+    await broadcast_state(station_id)
+
+  In your frontend JS, listen on the UI WebSocket:
+
+    const ws = new WebSocket('ws://YOUR_SERVER:9000/ui');
+    ws.onmessage = function(event) {
+      const msg = JSON.parse(event.data);
+      if (msg.event === 'state_update') {
+        const connectors = msg.data.connectors;
+        for (const [id, conn] of Object.entries(connectors)) {
+          if (conn.status === 'Finishing') {
+            // Session just ended — fetch invoice and show modal
+            fetchAndShowInvoice(msg.station_id, conn);
+          }
+        }
+      }
+    };
+
+    async function fetchAndShowInvoice(stationId, conn) {
+      const res = await fetch('/api/invoice/generate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          station_id:   stationId,
+          energy_kwh:   conn.energy_kwh,
+          duration_min: conn.duration_min,
+          power_kw:     conn.power_kw,
+          vehicle_id:   conn.vehicle_id || '',
+        })
+      });
+      const data = await res.json();
+      showInvoiceModal(data);
+    }
+*/
+</script>
+</body>
+</html>
