@@ -1,0 +1,1271 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Charge Hubs — MACH</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<style>
+@font-face {
+  font-family: 'Lastica';
+  src: url('/static/fonts/NobodyTalks-oZo4.ttf') format('truetype');
+}
+
+
+*, *::before, *::after { box-sizing: border-box; }
+body { background-color: #ffffff; font-family: 'Poppins', sans-serif; margin: 0; color: #1a1a1a; min-height: 100vh; }
+
+/* ── Announcement Bar ── */
+.announcement-bar { background: linear-gradient(90deg, #c0392b 0%, #e53935 100%); color: rgba(255,255,255,0.95); text-align: center; font-size: 0.75rem; font-weight: 500; letter-spacing: 0.4px; padding: 7px 16px; }
+
+/* ── Header ── */
+header { background: #ffffff; border-bottom: 1px solid #e8e8e8; padding: 0 20px; height: 60px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 200; }
+.logo-wrap { display: flex; align-items: center; gap: 10px; }
+.logo-icon { height: 48px; width: auto; object-fit: contain; }
+nav a { margin-left: 22px; text-decoration: none; color: #555555; font-weight: 500; font-size: 0.85rem; padding-bottom: 2px; border-bottom: 2px solid transparent; transition: color 0.2s, border-color 0.2s; }
+nav a:hover, nav a.active { color: #e53935; border-bottom-color: #e53935; }
+
+/* ── Search Bar ── */
+.search-bar-wrap { background: #ffffff; padding: 14px 16px; border-bottom: 1px solid #e8e8e8; display: flex; gap: 10px; align-items: center; }
+.search-input-wrap { flex: 1; display: flex; align-items: center; background: #f5f5f5; border: 1.5px solid #ddd; border-radius: 10px; overflow: hidden; padding: 0 14px; gap: 8px; transition: border-color 0.2s; }
+.search-input-wrap:focus-within { border-color: #e53935; }
+.search-input { border: none; outline: none; background: transparent; font-family: 'Poppins', sans-serif; font-size: 0.82rem; color: #1a1a1a; flex: 1; padding: 10px 0; }
+.search-input::placeholder { color: #999; }
+.btn-nearme { background: #f5f5f5; color: #e53935; border: 1.5px solid #e53935; border-radius: 10px; font-family: 'Poppins', sans-serif; font-size: 0.78rem; font-weight: 600; padding: 10px 14px; cursor: pointer; white-space: nowrap; transition: background 0.2s; }
+.btn-nearme:hover { background: #ffe5e5; }
+.btn-list-toggle { background: #e53935; color: #fff; border: none; border-radius: 10px; font-family: 'Poppins', sans-serif; font-size: 0.78rem; font-weight: 700; padding: 10px 14px; cursor: pointer; white-space: nowrap; transition: background 0.2s; }
+.btn-list-toggle:hover { background: #c0392b; }
+
+/* ── Section Header ── */
+.section-header { padding: 18px 18px 10px; display: flex; align-items: center; justify-content: space-between; }
+.section-header-title { font-size: 0.7rem; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: #e53935; }
+.section-header-count { font-size: 0.7rem; color: #999; }
+
+/* ── Station Cards — Full Viewport, One Card Per Screen ── */
+.stations-list { padding: 12px 16px; display: flex; flex-direction: column; gap: 20px; }
+
+.station-item {
+  background: #ffffff;
+  border: 1px solid #e8e8e8;
+  border-left: 6px solid #e53935;
+  border-radius: 20px;
+  display: flex;
+  flex-direction: row;
+  overflow: hidden;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+  height: calc(100vh - 140px);
+  min-height: 500px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.07);
+}
+.station-item:hover { transform: translateY(-3px); box-shadow: 0 12px 36px rgba(229,57,53,0.18); }
+
+/* Left image panel — exactly 50% */
+.station-card-img-wrap {
+  width: 50%;
+  min-width: 50%;
+  flex-shrink: 0;
+  overflow: hidden;
+  position: relative;
+  background: #fce8e8;
+}
+.station-card-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.station-card-img-placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 5rem;
+  background: linear-gradient(135deg, #fce8e8 0%, #ffe0e0 100%);
+  color: #e53935;
+}
+
+/* Right content panel — exactly 50% */
+.station-card-content {
+  width: 50%;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 28px 28px;
+  gap: 10px;
+  min-width: 0;
+}
+
+.station-item-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; }
+.station-name-main { font-size: 1.3rem; font-weight: 700; color: #1a1a1a; margin: 0; line-height: 1.3; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.avail-badge { font-size: 0.78rem; font-weight: 700; white-space: nowrap; display: flex; align-items: center; gap: 4px; flex-shrink: 0; }
+.avail-badge .dot { width: 7px; height: 7px; border-radius: 50%; display: inline-block; flex-shrink: 0; }
+.avail-badge.available { color: #e53935; }
+.avail-badge.available .dot { background: #e53935; box-shadow: 0 0 6px #e53935; }
+.avail-badge.powercut { color: #ff6b6b; }
+.avail-badge.powercut .dot { background: #ff6b6b; box-shadow: 0 0 6px #ff6b6b; }
+.avail-badge.partial { color: #f59e0b; }
+.avail-badge.partial .dot { background: #f59e0b; box-shadow: 0 0 6px #f59e0b; }
+
+.station-address { font-size: 0.9rem; color: #777777; line-height: 1.5; margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+.station-item-bottom { display: flex; justify-content: space-between; align-items: center; }
+.distance-badge { background: #f5f5f5; color: #888; font-size: 0.8rem; font-weight: 600; padding: 6px 14px; border-radius: 20px; border: 1px solid #eee; }
+.station-actions { display: flex; gap: 6px; }
+.action-btn { width: 44px; height: 44px; border-radius: 50%; background: #f5f5f5; border: 1px solid #eee; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; cursor: pointer; color: #777777; transition: background 0.2s, color 0.2s; text-decoration: none; }
+.action-btn:hover { background: #e53935; color: #fff; border-color: #e53935; }
+
+/* ── Featured Section ── */
+.featured-section { padding: 16px 12px 8px; }
+.featured-label { font-size: 0.7rem; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: #f59e0b; margin-bottom: 12px; }
+
+/* Featured cards — also horizontal */
+.featured-card {
+  background: linear-gradient(135deg, #ffffff 0%, #fff5f5 100%);
+  border: 1px solid #eee;
+  border-left: 4px solid #e53935;
+  border-radius: 14px;
+  overflow: hidden;
+  margin-bottom: 12px;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+  display: flex;
+  flex-direction: row;
+  height: calc(100vh - 140px);
+  min-height: 500px;
+}
+.featured-card:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(229,57,53,0.2); }
+
+.featured-card-img-wrap {
+  width: 50%;
+  min-width: 50%;
+  flex-shrink: 0;
+  overflow: hidden;
+  background: #fce8e8;
+  position: relative;
+}
+.featured-card-img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.featured-card-img-placeholder {
+  width: 100%; height: 100%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 2.2rem;
+  background: linear-gradient(135deg, #fce8e8, #ffe0e0);
+  color: #e53935;
+  font-size: 5rem;
+}
+.featured-card-body { padding: 28px 28px; flex: 1; display: flex; flex-direction: column; justify-content: center; gap: 14px; min-width: 0; }
+.featured-card-badge { font-size: 0.85rem; font-weight: 700; color: #f59e0b; text-transform: uppercase; letter-spacing: 1px; }
+.featured-card-name { font-size: 1.5rem; font-weight: 700; color: #1a1a1a; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.featured-card-meta { font-size: 1rem; color: #777777; display: flex; gap: 16px; flex-wrap: wrap; }
+
+/* ── Modal ── */
+.modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.82); z-index: 500; align-items: flex-end; justify-content: center; }
+.modal-overlay.active { display: flex; }
+.modal-sheet { background: #ffffff; border-radius: 20px 20px 0 0; width: 100%; max-width: 600px; max-height: 92vh; overflow-y: auto; animation: slideUp 0.3s ease; border-top: 2px solid #e53935; }
+@keyframes slideUp { from { transform: translateY(100%); opacity:0; } to { transform: translateY(0); opacity:1; } }
+.modal-drag-handle { width: 40px; height: 4px; background: #f0d0d0; border-radius: 2px; margin: 12px auto 0; }
+.modal-close-row { display: flex; justify-content: flex-end; padding: 8px 14px 0; }
+.modal-close-btn { background: #f5f5f5; border: none; width: 32px; height: 32px; border-radius: 50%; color: #777777; font-size: 1.1rem; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+.modal-close-btn:hover { background: #e53935; color: #fff; }
+.modal-station-image { width: 100%; height: 180px; object-fit: cover; display: block; margin-top: 8px; }
+.modal-body-wrap { padding: 0 18px 28px; }
+.modal-brand { font-size: 0.68rem; font-weight: 700; color: #e53935; letter-spacing: 1.5px; text-transform: uppercase; margin: 14px 0 4px; }
+.modal-station-name { font-size: 1.35rem; font-weight: 700; color: #1a1a1a; margin: 0 0 14px; line-height: 1.3; }
+.modal-pills { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 18px; }
+.modal-pill { font-size: 0.72rem; font-weight: 600; padding: 5px 12px; border-radius: 20px; display: flex; align-items: center; gap: 5px; }
+.pill-avail { background: #fff0f0; color: #e53935; border: 1px solid #fca5a5; }
+.pill-avail .dot { width: 7px; height: 7px; border-radius: 50%; background: #e53935; display: inline-block; }
+.pill-powercut { background: #fff0f0; color: #e53935; border: 1px solid #fca5a5; }
+.pill-powercut .dot { width: 7px; height: 7px; border-radius: 50%; background: #e53935; display: inline-block; }
+.pill-time { background: #f5f5f5; color: #666; border: 1px solid #ddd; }
+.pill-rating { background: #fffbeb; color: #d97706; border: 1px solid #fde68a; }
+.modal-stats-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1px; background: #fce8e8; border-radius: 12px; overflow: hidden; margin-bottom: 14px; }
+.modal-stat { background: #fafafa; padding: 14px 10px; text-align: center; }
+.modal-stat-label { font-size: 0.65rem; color: #999; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px; }
+.modal-stat-value { font-size: 1rem; font-weight: 700; color: #1a1a1a; }
+.modal-note { font-size: 0.72rem; color: #999; margin-bottom: 18px; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 4px; }
+.modal-note span.ev-discount { color: #e53935; font-weight: 600; }
+.chargers-section-title { font-size: 0.75rem; font-weight: 600; color: #555555; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px; }
+.chargers-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
+.charger-group { background: #fff0f0; border-radius: 12px; padding: 14px 10px; border: 1px solid #eee; }
+.charger-group.powercut { background: #fff0f0; border: 1px solid #fca5a5; }
+.charger-group-ports { display: flex; justify-content: space-around; margin-bottom: 8px; font-size: 0.68rem; color: #888; font-weight: 600; }
+.charger-power-badge { width: 44px; height: 44px; border-radius: 50%; background: #fff; color: #1a1a1a; font-size: 0.85rem; font-weight: 700; display: flex; align-items: center; justify-content: center; margin: 0 auto 10px; border: 2px solid #e53935; }
+.charger-group.powercut .charger-power-badge { background: #e53935; border-color: #ff6b6b; color: #fff; }
+.charger-port-row { display: flex; justify-content: space-around; }
+.charger-port-status { font-size: 0.63rem; font-weight: 600; text-align: center; }
+.charger-port-status.available { color: #e53935; }
+.charger-port-status.powercut-status { color: #f59e0b; }
+.modal-address-row { font-size: 0.78rem; color: #777777; margin-bottom: 20px; line-height: 1.6; }
+.modal-action-row { display: flex; gap: 10px; }
+.modal-btn-primary { flex: 1; background: #e53935; color: #fff; border: none; border-radius: 10px; font-family: 'Poppins', sans-serif; font-size: 0.88rem; font-weight: 700; padding: 13px; cursor: pointer; transition: background 0.2s; text-decoration: none; text-align: center; display: flex; align-items: center; justify-content: center; gap: 6px; }
+.modal-btn-primary:hover { background: #c0392b; color: #fff; }
+.modal-btn-secondary { background: #f5f5f5; color: #555; border: 1px solid #eee; border-radius: 10px; font-family: 'Poppins', sans-serif; font-size: 0.88rem; font-weight: 600; padding: 13px 18px; cursor: pointer; transition: background 0.2s; text-decoration: none; text-align: center; display: flex; align-items: center; justify-content: center; gap: 6px; }
+.modal-btn-secondary:hover { background: #ffe5e5; color: #e53935; }
+
+/* ── Footer ── */
+footer { background: #fafafa; padding: 20px 18px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; margin-top: 20px; border-top: 1px solid #eee; }
+.footer-brand { font-size: 0.9rem; font-weight: 700; color: #e53935; }
+.footer-info { font-size: 0.72rem; color: #aaa; text-align: right; }
+.footer-info a { color: #e53935; text-decoration: none; }
+
+/* ── Misc ── */
+.empty-state { text-align: center; padding: 48px 20px; color: #999; font-size: 0.88rem; }
+.error-box { background: #fff0f0; border: 1px solid #fca5a5; border-radius: 10px; padding: 16px 18px; color: #e53935; font-size: 0.85rem; margin: 16px; }
+
+/* ── OCPP Live Indicator ── */
+#ocppLiveDot { width: 9px; height: 9px; border-radius: 50%; background: #f59e0b; display: inline-block; margin-left: 8px; box-shadow: 0 0 6px #f59e0b; transition: background 0.4s, box-shadow 0.4s; }
+
+/* ── Badge pulse animation on OCPP update ── */
+@keyframes badgePulse { 0%{transform:scale(1)} 40%{transform:scale(1.18)} 100%{transform:scale(1)} }
+.badge-pulse { animation: badgePulse 0.35s ease; }
+
+/* ── Live charging connector status ── */
+.charger-group.charging { background: #f0fdf4; border-color: #86efac; }
+.charger-group.charging .charger-power-badge { background: #22c55e; border-color: #16a34a; color: #fff; }
+.charger-port-status.charging-status { color: #16a34a; font-weight: 700; }
+.charger-port-status.partial-status { color: #f59e0b; }
+.charger-session-info { font-size: 0.62rem; color: #888; text-align: center; margin-top: 6px; }
+
+/* ── OCPP Connection Status Bar ── */
+#ocppStatusBar {
+  position: fixed; bottom: 0; left: 0; right: 0; z-index: 400;
+  background: #1a1a1a; color: #fff;
+  font-size: 0.72rem; font-family: 'Poppins', sans-serif;
+  padding: 6px 16px; display: flex; align-items: center; justify-content: space-between;
+  transform: translateY(100%); transition: transform 0.3s ease;
+  border-top: 2px solid #e53935;
+}
+#ocppStatusBar.visible { transform: translateY(0); }
+#ocppStatusBar .bar-dot { width: 7px; height: 7px; border-radius: 50%; display: inline-block; margin-right: 6px; }
+#ocppStatusBar .bar-dot.live { background: #22c55e; box-shadow: 0 0 6px #22c55e; animation: dotPulse 1.5s infinite; }
+#ocppStatusBar .bar-dot.offline { background: #f59e0b; box-shadow: 0 0 6px #f59e0b; }
+@keyframes dotPulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+
+/* ── Slot availability mini bar on station cards ── */
+.slot-bar-wrap { margin-top: 6px; }
+.slot-bar-track { height: 4px; background: #f0f0f0; border-radius: 4px; overflow: hidden; }
+.slot-bar-fill { height: 100%; border-radius: 4px; transition: width 0.5s ease, background 0.5s ease; }
+.slot-bar-label { font-size: 0.62rem; color: #aaa; margin-top: 3px; }
+
+/* ── Live Dashboard Panel ── */
+#liveDashboard {
+  position: fixed; right: 0; top: 60px; bottom: 0; z-index: 300;
+  width: 290px; background: #fff; border-left: 1px solid #e8e8e8;
+  box-shadow: -4px 0 20px rgba(0,0,0,0.1);
+  display: flex; flex-direction: column;
+  transform: translateX(100%); transition: transform 0.3s ease;
+  font-family: 'Poppins', sans-serif;
+}
+#liveDashboard.open { transform: translateX(0); }
+#liveDashToggle {
+  position: fixed; right: 16px; top: 70px; z-index: 350;
+  background: #e53935; color: #fff; border: none;
+  border-radius: 50%; width: 46px; height: 46px;
+  font-size: 1.2rem; cursor: pointer; box-shadow: 0 4px 12px rgba(229,57,53,0.4);
+  display: flex; align-items: center; justify-content: center;
+  transition: background 0.2s, right 0.3s;
+}
+#liveDashToggle.shifted { right: 306px; }
+#liveDashToggle:hover { background: #c0392b; }
+
+.dash-header {
+  background: #e53935; color: #fff; padding: 14px 16px;
+  font-size: 0.85rem; font-weight: 700; display: flex; align-items: center; justify-content: space-between;
+}
+.dash-header .dash-live-dot { width: 8px; height: 8px; border-radius: 50%; background: #fff; margin-right: 6px; animation: dotPulse 1.5s infinite; }
+.dash-stations-list { flex: 1; overflow-y: auto; padding: 10px 0; }
+.dash-station-row {
+  padding: 10px 14px; border-bottom: 1px solid #f5f5f5;
+  cursor: pointer; transition: background 0.15s;
+}
+.dash-station-row:hover { background: #fff5f5; }
+.dash-station-name { font-size: 0.78rem; font-weight: 600; color: #1a1a1a; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.dash-station-meta { font-size: 0.68rem; color: #888; margin-top: 2px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.dash-badge { font-size: 0.62rem; font-weight: 700; padding: 2px 8px; border-radius: 20px; }
+.dash-badge.available { background: #fff0f0; color: #e53935; border: 1px solid #fca5a5; }
+.dash-badge.partial   { background: #fffbeb; color: #d97706; border: 1px solid #fde68a; }
+.dash-badge.busy      { background: #fef2f2; color: #dc2626; border: 1px solid #fca5a5; }
+.dash-badge.offline   { background: #f5f5f5; color: #888; border: 1px solid #ddd; }
+.dash-connector-row { display: flex; align-items: center; gap: 6px; margin-top: 4px; flex-wrap: wrap; }
+.dash-connector-chip {
+  font-size: 0.6rem; font-weight: 600; padding: 2px 7px; border-radius: 20px;
+  border: 1px solid #eee; background: #f5f5f5; color: #666;
+  display: flex; align-items: center; gap: 3px;
+}
+.dash-connector-chip.charging { background: #f0fdf4; color: #16a34a; border-color: #86efac; }
+.dash-connector-chip.fault    { background: #fef2f2; color: #dc2626; border-color: #fca5a5; }
+.dash-connector-chip.offline  { background: #f5f5f5; color: #999; border-color: #ddd; }
+.dash-connector-dot { width: 5px; height: 5px; border-radius: 50%; background: currentColor; display: inline-block; }
+.dash-updated { font-size: 0.58rem; color: #ccc; margin-top: 3px; }
+.dash-empty { text-align: center; padding: 40px 20px; color: #bbb; font-size: 0.8rem; }
+.dash-summary { background: #fafafa; padding: 10px 14px; border-top: 1px solid #eee; font-size: 0.72rem; color: #666; display: flex; justify-content: space-between; }
+.dash-summary span { font-weight: 700; color: #e53935; }
+
+/* ── Enhanced modal connector detail ── */
+.charger-session-timer { font-size: 0.6rem; color: #22c55e; font-weight: 700; text-align: center; margin-top: 2px; }
+.charger-kwh-bar { height: 3px; background: #e8e8e8; border-radius: 3px; margin-top: 5px; overflow: hidden; }
+.charger-kwh-fill { height: 100%; background: #22c55e; border-radius: 3px; transition: width 0.5s ease; }
+
+/* ── Mobile Responsive ── */
+@media (max-width: 768px) {
+  /* Header */
+  header { padding: 0 12px; height: auto; min-height: 56px; flex-wrap: wrap; gap: 6px; padding-top: 8px; padding-bottom: 8px; }
+  nav a { margin-left: 12px; font-size: 0.78rem; }
+
+  /* Search bar */
+  .search-bar-wrap { flex-wrap: wrap; gap: 8px; padding: 10px 12px; }
+  .search-input-wrap { order: -1; width: 100%; }
+  .btn-nearme, .btn-list-toggle { flex: 1; text-align: center; font-size: 0.75rem; padding: 9px 10px; }
+
+  /* Station cards — stack vertically on mobile */
+  .station-item {
+    flex-direction: column;
+    height: auto;
+    min-height: unset;
+  }
+  .station-card-img-wrap {
+    width: 100%;
+    min-width: 100%;
+    height: 200px;
+    flex-shrink: 0;
+  }
+  .station-card-content {
+    width: 100%;
+    padding: 16px 16px;
+  }
+  .station-name-main { font-size: 1.05rem; white-space: normal; }
+  .station-address { white-space: normal; font-size: 0.82rem; }
+
+  /* Featured cards — stack vertically on mobile */
+  .featured-card {
+    flex-direction: column;
+    height: auto;
+    min-height: unset;
+  }
+  .featured-card-img-wrap {
+    width: 100%;
+    min-width: 100%;
+    height: 200px;
+    flex-shrink: 0;
+  }
+  .featured-card-body { padding: 16px 16px; }
+  .featured-card-name { font-size: 1.15rem; white-space: normal; }
+
+  /* Modal */
+  .modal-sheet { max-height: 96vh; border-radius: 16px 16px 0 0; }
+  .modal-station-name { font-size: 1.05rem; }
+  .modal-stats-row { grid-template-columns: 1fr 1fr 1fr; }
+  .modal-stat-value { font-size: 0.85rem; }
+  .modal-action-row { flex-direction: column; gap: 8px; }
+  .modal-btn-primary, .modal-btn-secondary { width: 100%; }
+
+  /* Live Dashboard — full width on mobile */
+  #liveDashboard { width: 100%; border-left: none; border-top: 1px solid #e8e8e8; top: auto; bottom: 0; height: 60vh; }
+  #liveDashToggle { right: 12px; top: auto; bottom: 60px; }
+  #liveDashToggle.shifted { right: 12px; bottom: calc(60vh + 8px); }
+
+  /* Section header */
+  .section-header { padding: 14px 12px 8px; }
+
+  /* Stations list */
+  .stations-list { padding: 10px 10px; gap: 14px; }
+
+  /* Featured section */
+  .featured-section { padding: 12px 10px 6px; }
+}
+
+@media (max-width: 380px) {
+  .station-card-img-wrap, .featured-card-img-wrap { height: 170px; }
+  .station-name-main { font-size: 0.95rem; }
+  nav a { margin-left: 8px; font-size: 0.72rem; }
+  .btn-nearme, .btn-list-toggle { font-size: 0.7rem; padding: 8px 8px; }
+  .modal-stats-row { grid-template-columns: 1fr 1fr; }
+}
+
+/* ── Print Styles — Images & Layout ── */
+@media print {
+  /* Reset layout for print */
+  body { background: #fff !important; color: #000 !important; font-size: 11pt; }
+
+  /* Hide interactive/non-essential elements */
+  .announcement-bar,
+  .search-bar-wrap,
+  .btn-nearme,
+  .btn-list-toggle,
+  .station-actions,
+  .action-btn,
+  .modal-overlay,
+  #ocppStatusBar,
+  #liveDashboard,
+  #liveDashToggle,
+  #noStationsMsg,
+  .section-header-count,
+  nav { display: none !important; }
+
+  /* Header minimal */
+  header {
+    position: static !important;
+    border-bottom: 1pt solid #ccc;
+    padding: 8pt 12pt;
+    height: auto;
+  }
+
+  /* Cards: stack vertically, one per page-section */
+  .station-item,
+  .featured-card {
+    display: flex !important;
+    flex-direction: row !important;
+    height: auto !important;
+    min-height: unset !important;
+    page-break-inside: avoid;
+    break-inside: avoid;
+    border: 1pt solid #ccc !important;
+    border-left: 4pt solid #e53935 !important;
+    border-radius: 8pt !important;
+    margin-bottom: 16pt;
+    box-shadow: none !important;
+    overflow: visible !important;
+  }
+
+  /* Images: make sure they print */
+  .station-card-img-wrap,
+  .featured-card-img-wrap {
+    width: 38% !important;
+    min-width: 38% !important;
+    height: 160pt !important;
+    flex-shrink: 0 !important;
+    overflow: hidden !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  .station-card-img,
+  .featured-card-img {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;
+    display: block !important;
+  }
+
+  /* Placeholder emoji when no image */
+  .station-card-img-placeholder,
+  .featured-card-img-placeholder {
+    width: 100% !important;
+    height: 100% !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    font-size: 3rem !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+    background: #fce8e8 !important;
+  }
+
+  /* Content panel */
+  .station-card-content,
+  .featured-card-body {
+    padding: 12pt 14pt !important;
+    width: 62% !important;
+  }
+
+  .station-name-main,
+  .featured-card-name {
+    font-size: 13pt !important;
+    white-space: normal !important;
+    color: #000 !important;
+  }
+
+  .station-address { white-space: normal !important; font-size: 9pt !important; color: #444 !important; }
+
+  .avail-badge { font-size: 8pt !important; }
+
+  /* Stations list */
+  .stations-list { padding: 0 !important; gap: 0 !important; }
+  #allStationsSection { display: block !important; }
+
+  /* Featured section */
+  .featured-section { padding: 0 0 12pt !important; }
+
+  /* Ensure colors print */
+  * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+
+  /* Footer */
+  footer { border-top: 1pt solid #ccc; margin-top: 12pt; padding: 8pt; }
+}
+</style>
+</head>
+<body>
+
+<div class="announcement-bar">
+  &#127807; &nbsp; India's clean mobility starts here — explore verified EV charging points near you
+</div>
+
+<header>
+  <div class="logo-wrap">
+    <img src="{{ url_for('static', filename='logo2.png') }}" alt="MACH" class="logo-icon">
+  </div>
+  <nav>
+    <a href="{{ url_for('home') }}">Home</a>
+    <a href="{{ url_for('stations') }}" class="active">Stations</a>
+    <a href="{{ url_for('about') }}">About</a>
+    <span title="OCPP live connection" style="font-size:0.68rem;color:#999;display:flex;align-items:center;margin-left:14px;">OCPP<span id="ocppLiveDot"></span></span>
+  </nav>
+</header>
+
+
+
+<!-- FEATURED / PRIORITY -->
+{% set priority_stations = stations | selectattr('is_priority', 'equalto', 1) | list if stations else [] %}
+{% if priority_stations %}
+<div class="featured-section">
+  <div class="featured-label">&#11088; Featured Hubs</div>
+  {% for ps in priority_stations %}
+  <div class="featured-card" onclick="openModal(
+    '{{ ps['name'] | e }}','{{ ps['address'] | e }}','{{ ps['city'] | e }}',
+    '{{ ps['type'] | e }}','{{ ps['latitude'] }}','{{ ps['longitude'] }}',
+    '{{ ps.get('slots', 6) }}','{{ ps.get('speed', '') | e }}','{{ ps.get('rate', '') }}',
+    '{{ ps.get('status', 'available') }}','{{ ps.get('rating', '4.5') }}',
+    '{{ url_for('static', filename=ps['image_url']) if (ps.get('image_url') and ps['image_url'] not in ['', 'nan', 'None']) else '' }}',
+    '{{ ps.get('phone', '') | e }}'
+  )">
+    <!-- LEFT: Image -->
+    <div class="featured-card-img-wrap">
+      {% if ps.get('image_url') and ps['image_url'] not in ['', 'nan', 'None'] %}
+        <img src="{{ url_for('static', filename=ps['image_url']) }}" alt="{{ ps['name'] }}" class="featured-card-img">
+      {% else %}
+        <div class="featured-card-img-placeholder">⚡</div>
+      {% endif %}
+    </div>
+    <!-- RIGHT: Body -->
+    <div class="featured-card-body">
+      <div class="featured-card-badge">⭐ Priority Station</div>
+      <div class="featured-card-name">{{ ps['name'] }}</div>
+      <div class="featured-card-meta">
+        <span>📍 {{ ps['city'] }}</span>
+        <span>⚡ {{ ps.get('speed', 'Fast Charge') }}</span>
+        <span>🔌 {{ ps.get('slots', '—') }} slots</span>
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% endif %}
+
+<!-- ALL STATIONS -->
+<div id="allStationsSection" style="display:none;">
+  <div class="section-header">
+    <span class="section-header-title">&#9889; Charge Hubs</span>
+    <span class="section-header-count" id="stationCount"></span>
+  </div>
+  <div class="stations-list" id="stationsContainer">
+  {% if db_error is defined and db_error %}
+    <div class="error-box">&#9888;&#65039; <strong>Could not load stations.</strong> {{ db_error }}</div>
+  {% elif stations %}
+    {% for station in stations %}
+    {% set s_status = station.get('status', 'available') %}
+    {% set s_avail = station.get('available_slots', station.get('slots', 0)) | int %}
+    {% set s_total = station.get('total_slots', station.get('slots', s_avail)) | int %}
+    <div class="station-item"
+         data-lat="{{ station['latitude'] }}"
+         data-lng="{{ station['longitude'] }}"
+         data-station-id="{{ station.get('station_id', station['name']) | e }}"
+         onclick="openModal(
+           '{{ station['name'] | e }}','{{ station['address'] | e }}','{{ station['city'] | e }}',
+           '{{ station['type'] | e }}','{{ station['latitude'] }}','{{ station['longitude'] }}',
+           '{{ station.get('slots', 6) }}','{{ station.get('speed', '') | e }}','{{ station.get('rate', '') }}',
+           '{{ s_status }}','{{ station.get('rating', '4.5') }}',
+           '{{ url_for('static', filename=station['image_url']) if (station.get('image_url') and station['image_url'] not in ['', 'nan', 'None']) else '' }}',
+           '{{ station.get('phone', '') | e }}',
+           '{{ station.get('station_id', station['name']) | e }}'
+         )">
+      <!-- LEFT: Image -->
+      <div class="station-card-img-wrap">
+        {% if station.get('image_url') and station['image_url'] not in ['', 'nan', 'None'] %}
+          <img src="{{ url_for('static', filename=station['image_url']) }}" alt="{{ station['name'] }}" class="station-card-img">
+        {% else %}
+          <div class="station-card-img-placeholder">⚡</div>
+        {% endif %}
+      </div>
+      <!-- RIGHT: Content -->
+      <div class="station-card-content">
+        <div class="station-item-top">
+          <div class="station-name-main">{{ station['name'] }}</div>
+          {% if s_status == 'powercut' %}
+            <div class="avail-badge powercut"><span class="dot"></span> POWER CUT</div>
+          {% elif s_avail == 0 and s_total > 0 %}
+            <div class="avail-badge powercut"><span class="dot"></span> BUSY</div>
+          {% elif s_avail < s_total and s_total > 0 %}
+            <div class="avail-badge partial"><span class="dot"></span> {{ s_avail }}/{{ s_total }} AVAIL</div>
+          {% else %}
+            <div class="avail-badge available"><span class="dot"></span> {{ s_avail }}/{{ s_total }} AVAIL</div>
+          {% endif %}
+        </div>
+        <div class="station-address">📍 {{ station['address'] }}, {{ station['city'] }}</div>
+        <div class="station-item-bottom">
+          <div class="distance-badge distance">— km</div>
+          <div class="station-actions">
+            {% if station.get('phone') %}
+            <a href="tel:{{ station['phone'] }}" class="action-btn" onclick="event.stopPropagation()" title="Call">📞</a>
+            {% else %}
+            <span class="action-btn" onclick="event.stopPropagation();alert('No contact available')" title="Call">📞</span>
+            {% endif %}
+            <a href="https://www.google.com/maps?q={{ station['latitude'] }},{{ station['longitude'] }}"
+               target="_blank" class="action-btn" onclick="event.stopPropagation()" title="Map">📍</a>
+          </div>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  {% else %}
+    <div class="empty-state">&#128269; No stations found. Try a different city name.</div>
+  {% endif %}
+  </div>
+</div>
+
+
+
+<!-- LANDING CTA -->
+<div id="noStationsMsg" style="text-align:center;padding:52px 24px;">
+  <!-- SEARCH BAR -->
+<div class="search-bar-wrap">
+  <form action="/search" method="POST" class="search-input-wrap" id="searchForm">
+    <span style="color:#5a7a5e;">&#128269;</span>
+    <input type="text" name="city" id="cityInput" class="search-input"
+           placeholder="Search EV Stations"
+           value="{{ searched_city if searched_city is defined and searched_city else '' }}"
+           required>
+  </form>
+  <button type="button" onclick="useLocation()" class="btn-nearme">&#128205; Near Me</button>
+  <button type="button" onclick="toggleAllStations()" class="btn-list-toggle">&#9776; All</button>
+</div>
+  <div style="font-size:1.05rem;font-weight:700;color:#1a1a1a;margin-bottom:6px;">Find Charge Hubs Near You</div>
+  <div style="font-size:0.8rem;color:#7a4a4a;margin-bottom:24px;">Search by city or tap Near Me</div>
+  <button onclick="toggleAllStations()" class="btn-list-toggle" style="padding:12px 28px;font-size:0.88rem;border-radius:10px;">View All Stations</button>
+</div>
+
+
+
+<!-- DETAIL MODAL -->
+<div class="modal-overlay" id="stationModal" onclick="closeModalOutside(event)">
+  <div class="modal-sheet">
+    <div class="modal-drag-handle"></div>
+    <div class="modal-close-row">
+      <button class="modal-close-btn" onclick="closeModal()">&#10005;</button>
+    </div>
+    <img src="" alt="" class="modal-station-image" id="modalImage" style="display:none;">
+    <div class="modal-body-wrap">
+      <div class="modal-brand" id="modalBrand">MACH x CHARGE HUB</div>
+      <div class="modal-station-name" id="modalName">—</div>
+      <div class="modal-pills" id="modalPills"></div>
+      <div class="modal-stats-row">
+        <div class="modal-stat">
+          <div class="modal-stat-label">Distance</div>
+          <div class="modal-stat-value" id="modalDistance">—</div>
+        </div>
+        <div class="modal-stat">
+          <div class="modal-stat-label">Max Speed</div>
+          <div class="modal-stat-value" id="modalSpeed">—</div>
+        </div>
+        <div class="modal-stat">
+          <div class="modal-stat-label">MRP / unit</div>
+          <div class="modal-stat-value" id="modalRate">—</div>
+        </div>
+      </div>
+      <div class="modal-note">
+        <span>#GST Extra</span>
+        <span class="ev-discount" id="modalDiscount"></span>
+      </div>
+      <div class="chargers-section-title">Chargers Availability</div>
+      <div class="chargers-grid" id="modalChargersGrid"></div>
+      <div class="modal-address-row" id="modalAddress"></div>
+      <div class="modal-action-row">
+        <a href="#" id="modalRouteBtn" target="_blank" class="modal-btn-primary">&#128205; Get Route</a>
+        <a href="#" id="modalCallBtn" class="modal-btn-secondary">&#128222; Call</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+  <div class="footer-info">
+    EV Station Locator &nbsp;|&nbsp; Made by 3D &nbsp;
+    <a href="mailto:indumathi3637@gmail.com">indumathi3637@gmail.com</a>
+  </div>
+</footer>
+
+<!-- ── OCPP Connection Status Bar ── -->
+<div id="ocppStatusBar">
+  <div style="display:flex;align-items:center;">
+    <span class="bar-dot offline" id="ocppBarDot"></span>
+    <span id="ocppBarText">OCPP Connecting…</span>
+  </div>
+  <span id="ocppBarTime" style="color:#888;"></span>
+</div>
+
+<!-- ── Live Dashboard Toggle Button ── -->
+<button id="liveDashToggle" onclick="toggleDashboard()" title="Live Station Dashboard">⚡</button>
+
+<!-- ── Live Dashboard Panel ── -->
+<div id="liveDashboard">
+  <div class="dash-header">
+    <div style="display:flex;align-items:center;">
+      <span class="dash-live-dot"></span>
+      Live Station Status
+    </div>
+    <span id="dashStationCount" style="font-size:0.72rem;opacity:0.85;"></span>
+  </div>
+  <div class="dash-stations-list" id="dashList">
+    <div class="dash-empty">⚡ Waiting for OCPP data…</div>
+  </div>
+  <div class="dash-summary" id="dashSummary" style="display:none;">
+    <div>Available: <span id="dashAvailCount">0</span></div>
+    <div>Charging: <span id="dashChargingCount">0</span></div>
+    <div>Offline: <span id="dashOfflineCount">0</span></div>
+  </div>
+</div>
+
+<script>
+/* ================================================================
+   OCPP Live WebSocket Client
+   Connects to ws://<host>:9000/ui  (the OCPP broadcast channel)
+   Updates station cards and modal in real-time when charger
+   state changes (StatusNotification / TransactionEvent / etc.)
+   ================================================================ */
+
+/* ================================================================
+   OCPP LIVE TRACKING — Enhanced with Dashboard, Slot Bars,
+   Session Timers, Connection Status Bar, and Per-Connector Detail
+   ================================================================ */
+
+const OCPP_WS_URL = `ws://${location.hostname}:9000/ui`;
+
+// keyed by station_id → { connected, total_slots, available_slots, status, connectors, name }
+let ocppState = {};
+// Session start times for timer: { station_id:connector_id → timestamp }
+let sessionStartTimes = {};
+let ocppWs = null;
+let ocppReconnectTimer = null;
+let ocppIsLive = false;
+let sessionTimerInterval = null;
+
+/* ── WebSocket Connection ── */
+function connectOCPP() {
+  if (ocppWs && ocppWs.readyState <= 1) return;
+  ocppWs = new WebSocket(OCPP_WS_URL);
+
+  ocppWs.onopen = () => {
+    console.info("[OCPP] Connected →", OCPP_WS_URL);
+    clearTimeout(ocppReconnectTimer);
+    ocppIsLive = true;
+    showOcppIndicator(true);
+    updateStatusBar(true);
+  };
+
+  ocppWs.onmessage = (evt) => {
+    try {
+      const msg = JSON.parse(evt.data);
+      if (msg.event === "full_state") {
+        ocppState = msg.data || {};
+        // Stamp all with current time
+        const now = Date.now();
+        Object.values(ocppState).forEach(d => { if (d) d._ts = now; });
+        applyAllOcppState();
+        renderDashboard();
+      } else if (msg.event === "state_update" && msg.station_id) {
+        // Track session start times for new Charging connectors
+        const prev = ocppState[msg.station_id];
+        const next  = msg.data;
+        if (next && next.connectors) {
+          Object.entries(next.connectors).forEach(([cid, c]) => {
+            const key = `${msg.station_id}:${cid}`;
+            const wasCharging = prev && prev.connectors && prev.connectors[cid] && prev.connectors[cid].status === "Charging";
+            if (c.status === "Charging" && !wasCharging) {
+              sessionStartTimes[key] = Date.now();
+            } else if (c.status !== "Charging") {
+              delete sessionStartTimes[key];
+            }
+          });
+        }
+        ocppState[msg.station_id] = msg.data;
+        if (msg.data) msg.data._ts = Date.now();
+        applyStationOcppState(msg.station_id, msg.data);
+        refreshModalIfOpen(msg.station_id);
+        renderDashboard();
+      }
+      // Flash last-updated time in status bar
+      updateStatusBar(true);
+    } catch(e) { console.warn("[OCPP] Bad message", e); }
+  };
+
+  ocppWs.onerror = () => console.warn("[OCPP] WebSocket error");
+
+  ocppWs.onclose = (evt) => {
+    console.info("[OCPP] Disconnected, retrying in 5 s…", evt.code);
+    ocppIsLive = false;
+    showOcppIndicator(false);
+    updateStatusBar(false);
+    ocppReconnectTimer = setTimeout(connectOCPP, 5000);
+  };
+}
+
+/* ── Header OCPP dot ── */
+function showOcppIndicator(live) {
+  const dot = document.getElementById("ocppLiveDot");
+  if (!dot) return;
+  dot.title = live ? "OCPP live" : "OCPP offline";
+  dot.style.background = live ? "#22c55e" : "#f59e0b";
+  dot.style.boxShadow  = live ? "0 0 6px #22c55e" : "0 0 6px #f59e0b";
+}
+
+/* ── Bottom OCPP Status Bar ── */
+function updateStatusBar(live) {
+  const bar  = document.getElementById("ocppStatusBar");
+  const dot  = document.getElementById("ocppBarDot");
+  const text = document.getElementById("ocppBarText");
+  const time = document.getElementById("ocppBarTime");
+  if (!bar) return;
+  bar.classList.add("visible");
+  if (live) {
+    dot.className = "bar-dot live";
+    text.textContent = "OCPP Live — Real-time charger data active";
+    time.textContent = "Updated: " + new Date().toLocaleTimeString();
+  } else {
+    dot.className = "bar-dot offline";
+    text.textContent = "OCPP Offline — Reconnecting in 5 s…";
+    time.textContent = "";
+  }
+}
+
+/* ── Apply all state ── */
+function applyAllOcppState() {
+  Object.entries(ocppState).forEach(([sid, data]) => applyStationOcppState(sid, data));
+}
+
+/* ── Map OCPP status → badge class + text ── */
+function ocppStatusBadge(status, availSlots, totalSlots, connected) {
+  if (!connected)                           return { cls: "powercut", text: "OFFLINE" };
+  if (status === "powercut" || status === "faulted") return { cls: "powercut", text: "FAULT" };
+  if (availSlots === 0 && totalSlots > 0)   return { cls: "powercut", text: "BUSY" };
+  if (availSlots < totalSlots && totalSlots > 0) return { cls: "partial",  text: `${availSlots}/${totalSlots} AVAIL` };
+  if (totalSlots > 0)                       return { cls: "available",text: `${availSlots}/${totalSlots} AVAIL` };
+  return { cls: "available", text: "AVAIL" };
+}
+
+/* ── Update station card badge + slot bar ── */
+function applyStationOcppState(stationId, data) {
+  if (!data) return;
+  const { connected, total_slots, available_slots, status } = data;
+
+  document.querySelectorAll(`[data-station-id="${CSS.escape(stationId)}"]`).forEach(card => {
+    // Badge
+    const badge = card.querySelector(".avail-badge");
+    if (badge) {
+      const { cls, text } = ocppStatusBadge(status, available_slots, total_slots, connected);
+      badge.className = `avail-badge ${cls}`;
+      badge.innerHTML = `<span class="dot"></span> ${text}`;
+      badge.classList.remove("badge-pulse");
+      void badge.offsetWidth;
+      badge.classList.add("badge-pulse");
+    }
+
+    // Slot bar — insert if not present
+    let slotBarWrap = card.querySelector(".slot-bar-wrap");
+    if (!slotBarWrap) {
+      slotBarWrap = document.createElement("div");
+      slotBarWrap.className = "slot-bar-wrap";
+      slotBarWrap.innerHTML = `
+        <div class="slot-bar-track"><div class="slot-bar-fill"></div></div>
+        <div class="slot-bar-label"></div>`;
+      const bottom = card.querySelector(".station-item-bottom");
+      if (bottom) card.querySelector(".station-card-content").insertBefore(slotBarWrap, bottom);
+    }
+    const fill  = slotBarWrap.querySelector(".slot-bar-fill");
+    const label = slotBarWrap.querySelector(".slot-bar-label");
+    if (fill && label && total_slots > 0) {
+      const pct = Math.round((available_slots / total_slots) * 100);
+      fill.style.width = pct + "%";
+      fill.style.background = pct === 0 ? "#e53935" : pct < 50 ? "#f59e0b" : "#22c55e";
+      label.textContent = `${available_slots} of ${total_slots} slots free`;
+    }
+  });
+}
+
+/* ── Refresh modal availability pills if open ── */
+let _modalStationId = null;
+
+function refreshModalIfOpen(stationId) {
+  if (_modalStationId !== stationId) return;
+  const data = ocppState[stationId];
+  if (!data) return;
+  updateModalChargers(data);
+  const pillsEl = document.getElementById("modalPills");
+  if (!pillsEl) return;
+  const { connected, total_slots, available_slots, status } = data;
+  let pill = "";
+  if (!connected || status === "faulted")
+    pill += `<span class="modal-pill pill-powercut"><span class="dot"></span> OFFLINE / FAULT</span>`;
+  else if (available_slots === 0 && total_slots > 0)
+    pill += `<span class="modal-pill pill-powercut"><span class="dot"></span> BUSY</span>`;
+  else
+    pill += `<span class="modal-pill pill-avail"><span class="dot"></span> ${available_slots}/${total_slots} AVAILABLE</span>`;
+  pill += `<span class="modal-pill pill-time">⏰ 24/7 OPEN</span>`;
+  const ratingPill = pillsEl.querySelector(".pill-rating");
+  if (ratingPill) pill += ratingPill.outerHTML;
+  pillsEl.innerHTML = pill;
+}
+
+/* ── Build charger grid from live OCPP data (with session timers + kWh bar) ── */
+function updateModalChargers(ocppData) {
+  const grid = document.getElementById("modalChargersGrid");
+  if (!grid) return false;
+  const connectors = ocppData.connectors || {};
+  const connected  = ocppData.connected;
+  if (Object.keys(connectors).length === 0) return false;
+
+  grid.innerHTML = Object.entries(connectors).map(([cid, c]) => {
+    const status     = c.status || "Unknown";
+    const isCharging = status === "Charging";
+    const isFault    = status === "Faulted" || status === "Unavailable";
+    const isAvail    = status === "Available";
+    const sessionKey = `${_modalStationId}:${cid}`;
+
+    let statusClass = "available", statusLabel = status;
+    if (!connected)    { statusClass = "powercut-status"; statusLabel = "Offline"; }
+    else if (isFault)  { statusClass = "powercut-status"; statusLabel = "Fault"; }
+    else if (isCharging) { statusClass = "charging-status"; statusLabel = "Charging ⚡"; }
+    else if (!isAvail) { statusClass = "partial-status";   statusLabel = status; }
+
+    const energy  = c.energy_kwh ? parseFloat(c.energy_kwh) : null;
+    const power   = c.power_kw   ? `${parseFloat(c.power_kw).toFixed(1)} kW` : "";
+    const vehicle = c.vehicle_id && c.vehicle_id !== "GUEST-TOKEN" ? c.vehicle_id : "";
+
+    // Session timer
+    const startTime = sessionStartTimes[sessionKey];
+    const timerHtml = isCharging && startTime
+      ? `<div class="charger-session-timer" data-start="${startTime}" data-key="${sessionKey}">⏱ 00:00</div>`
+      : "";
+
+    // Energy bar (assuming 100 kWh as max for full bar)
+    const kwhBarHtml = energy !== null
+      ? `<div class="charger-kwh-bar"><div class="charger-kwh-fill" style="width:${Math.min(energy/100*100,100)}%"></div></div>
+         <div class="charger-session-info">${energy.toFixed(2)} kWh${vehicle?' · '+vehicle:''}</div>`
+      : (vehicle ? `<div class="charger-session-info">${vehicle}</div>` : "");
+
+    return `
+      <div class="charger-group${isFault||!connected?' powercut':isCharging?' charging':''}">
+        <div class="charger-group-ports">Port ${cid}</div>
+        <div class="charger-power-badge">${power || "—"}</div>
+        <div class="charger-port-row">
+          <div class="charger-port-status ${statusClass}">${statusLabel}</div>
+        </div>
+        ${timerHtml}
+        ${kwhBarHtml}
+      </div>`;
+  }).join("");
+
+  startSessionTimers();
+  return true;
+}
+
+/* ── Session duration timers (updates every second) ── */
+function startSessionTimers() {
+  clearInterval(sessionTimerInterval);
+  sessionTimerInterval = setInterval(() => {
+    document.querySelectorAll("[data-start]").forEach(el => {
+      const elapsed = Math.floor((Date.now() - parseInt(el.dataset.start)) / 1000);
+      const h = Math.floor(elapsed / 3600);
+      const m = Math.floor((elapsed % 3600) / 60);
+      const s = elapsed % 60;
+      el.textContent = `⏱ ${h > 0 ? h + "h " : ""}${String(m).padStart(2,"0")}:${String(s).padStart(2,"0")}`;
+    });
+  }, 1000);
+}
+
+/* ── Live Dashboard Panel ── */
+let dashOpen = false;
+
+function toggleDashboard() {
+  dashOpen = !dashOpen;
+  document.getElementById("liveDashboard").classList.toggle("open", dashOpen);
+  document.getElementById("liveDashToggle").classList.toggle("shifted", dashOpen);
+  document.getElementById("liveDashToggle").textContent = dashOpen ? "✕" : "⚡";
+  if (dashOpen) renderDashboard();
+}
+
+function renderDashboard() {
+  const list = document.getElementById("dashList");
+  const summary = document.getElementById("dashSummary");
+  const countEl = document.getElementById("dashStationCount");
+  if (!list) return;
+
+  const entries = Object.entries(ocppState);
+  if (entries.length === 0) {
+    list.innerHTML = `<div class="dash-empty">⚡ No OCPP data yet…<br><span style="font-size:0.65rem;">Waiting for chargers to connect</span></div>`;
+    if (summary) summary.style.display = "none";
+    return;
+  }
+
+  let totalAvail = 0, totalCharging = 0, totalOffline = 0;
+
+  list.innerHTML = entries.map(([sid, data]) => {
+    const { connected, total_slots, available_slots, status, connectors, name } = data;
+    const displayName = name || sid;
+    const { cls, text } = ocppStatusBadge(status, available_slots, total_slots, connected);
+
+    // Count connectors
+    const conns = connectors || {};
+    const connEntries = Object.entries(conns);
+    let chargingCount = 0;
+    connEntries.forEach(([,c]) => { if (c.status === "Charging") chargingCount++; });
+
+    if (!connected) totalOffline++;
+    else if (available_slots === 0) { /* busy */ }
+    else totalAvail += available_slots;
+    totalCharging += chargingCount;
+
+    // Connector chips
+    const chips = connEntries.map(([cid, c]) => {
+      const cs = c.status || "Unknown";
+      const chipCls = cs === "Charging" ? "charging" : (cs === "Faulted" || cs === "Unavailable") ? "fault" : !connected ? "offline" : "";
+      const power = c.power_kw ? ` ${parseFloat(c.power_kw).toFixed(0)}kW` : "";
+      return `<span class="dash-connector-chip ${chipCls}"><span class="dash-connector-dot"></span>P${cid}${power}</span>`;
+    }).join("");
+
+    const timeAgo = data._ts ? timeSince(data._ts) : "";
+
+    return `<div class="dash-station-row" onclick="toggleDashboard()">
+      <div class="dash-station-name">${escapeHtml(displayName)}</div>
+      <div class="dash-station-meta">
+        <span class="dash-badge ${cls}">${text}</span>
+        ${chargingCount > 0 ? `<span style="color:#16a34a;font-size:0.65rem;">⚡ ${chargingCount} charging</span>` : ""}
+      </div>
+      ${chips ? `<div class="dash-connector-row">${chips}</div>` : ""}
+      ${timeAgo ? `<div class="dash-updated">Updated ${timeAgo}</div>` : ""}
+    </div>`;
+  }).join("");
+
+  if (countEl) countEl.textContent = `${entries.length} station${entries.length !== 1 ? "s" : ""}`;
+  if (summary) {
+    summary.style.display = "flex";
+    document.getElementById("dashAvailCount").textContent = totalAvail;
+    document.getElementById("dashChargingCount").textContent = totalCharging;
+    document.getElementById("dashOfflineCount").textContent = totalOffline;
+  }
+}
+
+function timeSince(ts) {
+  const sec = Math.floor((Date.now() - ts) / 1000);
+  if (sec < 10) return "just now";
+  if (sec < 60) return `${sec}s ago`;
+  if (sec < 3600) return `${Math.floor(sec/60)}m ago`;
+  return `${Math.floor(sec/3600)}h ago`;
+}
+
+function escapeHtml(str) {
+  return String(str).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+}
+
+/* ================================================================
+   Original page logic (distance, search, modal, etc.)
+   ================================================================ */
+let userLat = null, userLng = null;
+
+function toggleAllStations() {
+  const section = document.getElementById("allStationsSection");
+  const msg = document.getElementById("noStationsMsg");
+  const hidden = section.style.display === "none";
+  section.style.display = hidden ? "block" : "none";
+  if (msg) msg.style.display = hidden ? "none" : "block";
+  if (hidden) { section.scrollIntoView({behavior:"smooth",block:"start"}); updateStationCount(); }
+}
+
+function updateStationCount() {
+  const cards = document.querySelectorAll(".station-item");
+  const visible = [...cards].filter(c => c.style.display !== "none").length;
+  const el = document.getElementById("stationCount");
+  if (el) el.textContent = visible + " station" + (visible !== 1 ? "s" : "");
+}
+
+function useLocation() {
+  if (!navigator.geolocation) { alert("Geolocation not supported."); return; }
+  navigator.geolocation.getCurrentPosition(pos => {
+    userLat = pos.coords.latitude; userLng = pos.coords.longitude;
+    localStorage.setItem("lat", userLat); localStorage.setItem("lng", userLng);
+    const section = document.getElementById("allStationsSection");
+    const msg = document.getElementById("noStationsMsg");
+    if (section) section.style.display = "block";
+    if (msg) msg.style.display = "none";
+    const cards = document.querySelectorAll(".station-item");
+    if (cards.length === 0) { localStorage.setItem("autoNearMe","true"); window.location.href="/stations"; }
+    else { calculateDistances(); section.scrollIntoView({behavior:"smooth",block:"start"}); }
+  }, err => {
+    const m = {1:"Location access denied.",2:"Location unavailable.",3:"Timed out."};
+    alert("\u274C " + (m[err.code] || "Could not get location."));
+  }, {enableHighAccuracy:true,timeout:10000,maximumAge:0});
+}
+
+function getDistance(lat1,lon1,lat2,lon2) {
+  const R=6371, dLat=(lat2-lat1)*Math.PI/180, dLon=(lon2-lon1)*Math.PI/180;
+  const a=Math.sin(dLat/2)**2+Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLon/2)**2;
+  return R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));
+}
+
+function calculateDistances() {
+  if (userLat===null||userLng===null) return;
+  const range=200; let vis=0;
+  document.querySelectorAll(".station-item").forEach(card => {
+    const lat=parseFloat(card.dataset.lat), lng=parseFloat(card.dataset.lng);
+    if (isNaN(lat)||isNaN(lng)) return;
+    const d=getDistance(userLat,userLng,lat,lng);
+    const el=card.querySelector(".distance");
+    if (d<=range) { card.style.display="flex"; if(el) el.textContent=d.toFixed(1)+" km"; vis++; }
+    else { card.style.display="none"; }
+  });
+  updateStationCount();
+  const noMsg=document.getElementById("no-nearby-msg");
+  if (vis===0) {
+    if (!noMsg) {
+      const div=document.createElement("div"); div.id="no-nearby-msg"; div.className="empty-state";
+      div.textContent="\uD83D\uDD0D No stations found within "+range+" km.";
+      document.getElementById("stationsContainer").appendChild(div);
+    }
+  } else { if(noMsg) noMsg.remove(); }
+}
+
+function openModal(name,address,city,type,lat,lng,slots,speed,rate,status,rating,imageUrl,phone,stationId) {
+  _modalStationId = stationId || null;
+  document.getElementById("modalName").textContent=name;
+  document.getElementById("modalAddress").innerHTML="\uD83D\uDCCD "+address+", "+city;
+
+  const imgEl=document.getElementById("modalImage");
+  const badImg = ["", "None", "nan", "undefined"];
+  if (imageUrl && imageUrl.trim() && !badImg.some(b => imageUrl.endsWith("/"+b) || imageUrl === b)) {
+    imgEl.src=imageUrl; imgEl.alt=name; imgEl.style.display="block";
+  } else { imgEl.style.display="none"; }
+
+  const pillsEl=document.getElementById("modalPills");
+  const slotsNum=parseInt(slots)||0;
+  let pill="";
+  if (status==="powercut") pill+=`<span class="modal-pill pill-powercut"><span class="dot"></span> POWER CUT</span>`;
+  else if (slotsNum===0) pill+=`<span class="modal-pill pill-powercut"><span class="dot"></span> BUSY</span>`;
+  else pill+=`<span class="modal-pill pill-avail"><span class="dot"></span> ${slotsNum}/${slotsNum} AVAILABLE</span>`;
+  pill+=`<span class="modal-pill pill-time">\u23F0 24/7 OPEN</span>`;
+  if (rating) pill+=`<span class="modal-pill pill-rating">\u2B50 ${rating}</span>`;
+  pillsEl.innerHTML=pill;
+
+  let distText="\u2014";
+  if (userLat!==null&&userLng!==null) distText=getDistance(userLat,userLng,parseFloat(lat),parseFloat(lng)).toFixed(1)+" km";
+  document.getElementById("modalDistance").textContent=distText;
+  document.getElementById("modalSpeed").textContent=(speed&&speed!=="None")?speed:"\u2014";
+  const rateVal=(rate&&rate!=="None"&&rate!=="")? parseFloat(rate):null;
+  document.getElementById("modalRate").textContent=rateVal ? "\u20B9"+rateVal.toFixed(1) : "\u2014";
+  document.getElementById("modalDiscount").textContent=rateVal ? "\u20B9"+(rateVal-5).toFixed(1)+" for TATA.ev cars" : "";
+
+  // Try live OCPP data first; fall back to static slot-based rendering
+  const grid=document.getElementById("modalChargersGrid");
+  const liveData = stationId ? ocppState[stationId] : null;
+  const usedLive = liveData ? updateModalChargers(liveData) : false;
+
+  if (!usedLive) {
+    // Static fallback
+    const isPowercut=status==="powercut";
+    const total=parseInt(slots)||6;
+    const fastCount=Math.min(Math.ceil(total*0.67),4);
+    const slowCount=total-fastCount;
+    const groups=[];
+    if (fastCount>0) {
+      const ports=[]; for(let i=0;i<fastCount;i++) ports.push(String.fromCharCode(65+Math.floor(i/2))+(i%2===0?'A':'B'));
+      groups.push({power:60,ports,powercut:isPowercut});
+    }
+    if (slowCount>0) {
+      const ports=[]; for(let i=0;i<Math.min(slowCount,2);i++) ports.push(String(31+i));
+      groups.push({power:120,ports,powercut:isPowercut});
+    }
+    grid.innerHTML=groups.map(g=>`
+      <div class="charger-group${g.powercut?' powercut':''}">
+        <div class="charger-group-ports">${g.ports.join('<span style="opacity:0">|</span>')}</div>
+        <div class="charger-power-badge">${g.power}</div>
+        <div class="charger-port-row">
+          ${g.ports.map(()=>`<div class="charger-port-status ${g.powercut?'powercut-status':'available'}">${g.powercut?'Power Cut':'Available'}</div>`).join("")}
+        </div>
+      </div>`).join("");
+  }
+
+  document.getElementById("modalRouteBtn").href=`https://www.google.com/maps?q=${lat},${lng}`;
+  const callBtn=document.getElementById("modalCallBtn");
+  if (phone&&phone.trim()&&phone!=="None") { callBtn.href="tel:"+phone; callBtn.style.opacity="1"; callBtn.style.pointerEvents="auto"; }
+  else { callBtn.href="#"; callBtn.style.opacity="0.35"; callBtn.style.pointerEvents="none"; }
+
+  document.getElementById("stationModal").classList.add("active");
+  document.body.style.overflow="hidden";
+}
+
+function closeModal() {
+  document.getElementById("stationModal").classList.remove("active");
+  document.body.style.overflow="";
+  _modalStationId = null;
+}
+function closeModalOutside(e) { if(e.target===document.getElementById("stationModal")) closeModal(); }
+document.addEventListener("keydown",e=>{ if(e.key==="Escape") closeModal(); });
+
+window.onload=function() {
+  const lat=localStorage.getItem("lat"), lng=localStorage.getItem("lng");
+  const autoNearMe=localStorage.getItem("autoNearMe");
+  if (lat&&lng) {
+    userLat=parseFloat(lat); userLng=parseFloat(lng);
+    if (autoNearMe==="true") {
+      localStorage.removeItem("autoNearMe");
+      document.getElementById("allStationsSection").style.display="block";
+      const msg=document.getElementById("noStationsMsg"); if(msg) msg.style.display="none";
+      calculateDistances();
+    }
+  }
+  const savedCity=localStorage.getItem("searchedCity");
+  const cityInput=document.getElementById("cityInput");
+  if (savedCity&&cityInput&&!cityInput.value.trim()) cityInput.value=savedCity;
+  if (localStorage.getItem("didSearch")==="true") {
+    document.getElementById("allStationsSection").style.display="block";
+    const msg=document.getElementById("noStationsMsg"); if(msg) msg.style.display="none";
+    localStorage.removeItem("didSearch");
+  }
+  const form=document.getElementById("searchForm");
+  if (form) form.addEventListener("submit",function() {
+    localStorage.setItem("searchedCity",document.getElementById("cityInput").value.trim());
+    localStorage.setItem("didSearch","true");
+  });
+  updateStationCount();
+
+  // Start OCPP WebSocket live connection
+  connectOCPP();
+};
+</script>
+
+<!--
+=================================================================
+  DATABASE — Optional new columns for richer station cards
+=================================================================
+  ALTER TABLE stations
+    ADD COLUMN IF NOT EXISTS is_priority     TINYINT(1)   NOT NULL DEFAULT 0,
+    ADD COLUMN IF NOT EXISTS image_url       VARCHAR(500)          DEFAULT NULL,
+    ADD COLUMN IF NOT EXISTS slots           INT                   DEFAULT 6,
+    ADD COLUMN IF NOT EXISTS available_slots INT                   DEFAULT 6,
+    ADD COLUMN IF NOT EXISTS total_slots     INT                   DEFAULT 6,
+    ADD COLUMN IF NOT EXISTS speed           VARCHAR(50)           DEFAULT '60 kW',
+    ADD COLUMN IF NOT EXISTS rate            DECIMAL(6,2)          DEFAULT 22.00,
+    ADD COLUMN IF NOT EXISTS rating          DECIMAL(3,1)          DEFAULT 4.5,
+    ADD COLUMN IF NOT EXISTS phone           VARCHAR(20)           DEFAULT NULL,
+    ADD COLUMN IF NOT EXISTS status          VARCHAR(30)           DEFAULT 'available';
+    -- status values: 'available' | 'powercut' | 'busy'
+
+  FLASK ROUTE:
+  cursor.execute("SELECT * FROM stations ORDER BY is_priority DESC, id ASC")
+  stations = cursor.fetchall()
+  return render_template("stations.html", stations=stations, searched_city="")
+=================================================================
+-->
+</body>
+</html>
